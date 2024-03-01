@@ -1,0 +1,35 @@
+{
+    "name": "Burgeon",
+    "short_name": "Burgeon",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Burgeon is a neuroscientific based app with one purpose, to help human beings flourish through great relating and creating. Whether you are a high-capacity leader, an individual recovering from trauma, or somewhere in between, this app will help you get to your next level of flourishing by integrating the different parts of yourself and aligning your life around what you need and want. The transformation begins by integrating your thoughts (both conscious and subconscious), your body (five senses and nervous system), emotions and the memory cells in every major organ in your body (see Candace Pert PHD), and your soul.  If you invest an honest and distraction-free five minutes a day in Burgeon you will begin to see the undeniable rewards of better relating (self-awareness, intuition, peace, connectivity, influence, and more) and creating (ingenuity, problem-solving, artistry, and more).",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
