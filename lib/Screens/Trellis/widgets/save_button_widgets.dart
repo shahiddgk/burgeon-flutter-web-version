@@ -19,9 +19,7 @@ class _SaveButtonWidgetsState extends State<SaveButtonWidgets> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-
        widget.onTap();
-
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width/10),

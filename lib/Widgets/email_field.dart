@@ -3,6 +3,7 @@
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_quiz_app/Widgets/colors.dart';
 
 import 'constants.dart';
@@ -19,32 +20,53 @@ class EmailField extends StatefulWidget {
 
 class _EmailFieldState extends State<EmailField> {
 
+  FocusNode emailFocusNode = FocusNode();
+
+
+
+  @override
+  void dispose() {
+    emailFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-        style: const TextStyle(fontSize: AppConstants.defaultFontSize),
-        controller: widget._textEditingController,
-        decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 5),
-            focusColor:  AppColors.primaryColor,
-            border: OutlineInputBorder(
-              borderSide: const BorderSide(
-                  color: AppColors.primaryColor
-              ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                  color: AppColors.primaryColor
-              ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            filled: true,
-            prefixIcon: const Icon(Icons.email,color: AppColors.primaryColor,),
-            hintStyle: TextStyle(color: Colors.grey[800]),
-            hintText: widget.hintText,
-            fillColor: AppColors.hoverColor),
-        validator: (email)=> EmailValidator.validate(email!.trim()) ? null :"Please enter a valid email"
-    );
+    return Focus(
+        onKeyEvent: (node, event) {
+          if(event.logicalKey == LogicalKeyboardKey.tab){
+            FocusScope.of(context).nextFocus();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: TextFormField(
+            style: const TextStyle(fontSize: AppConstants.defaultFontSize),
+            controller: widget._textEditingController,
+            // focusNode: emailFocusNode,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
+            decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(vertical: 5),
+                focusColor:  AppColors.primaryColor,
+                border: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: AppColors.primaryColor
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                      color: AppColors.primaryColor
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                filled: true,
+                prefixIcon: const Icon(Icons.email,color: AppColors.primaryColor,),
+                hintStyle: TextStyle(color: Colors.grey[800]),
+                hintText: widget.hintText,
+                fillColor: AppColors.hoverColor),
+
+            validator: (email)=> EmailValidator.validate(email!.trim()) ? null :"Please enter a valid email"
+        ));
   }
 }

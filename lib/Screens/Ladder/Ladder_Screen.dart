@@ -21,9 +21,7 @@ import '../../model/request_model/trellis_ladder_request_model.dart';
 import '../../network/http_manager.dart';
 import '../Payment/payment_screen.dart';
 import '../PireScreens/widgets/AppBar.dart';
-import '../PireScreens/widgets/PopMenuButton.dart';
 import '../Trellis/widgets/bottom_sheet.dart';
-import '../UserActivity/user_activity.dart';
 import '../Widgets/share_pop_up_dialogue.dart';
 import '../dashboard_tiles.dart';
 import '../utill/userConstants.dart';
@@ -57,22 +55,28 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
  // bool isGoalsTabActive = true;
   bool isFavourite = false;
 
-  String initialValueForType = "physical";
-  List itemsForType = ["physical","Emotional","Relational","Work","Financial","Spiritual"];
+  String initialValueForType = "Physical";
+  List itemsForType = ["Physical","Emotional","Relational","Work","Financial","Spiritual"];
+
+  String initialValueForLadderType = "Goals";
+  List itemsForLadderType = <String>["Goals", "Challenges", "Memories", "Achievements"];
 
   String initialValueForMType = "Memories";
   List itemsForMType = ["Memories","Achievements"];
 
-  String initialValueForGoals = "Goals";
-  String initialValueForMGoals = "Goals";
-  List itemsForGoals = <String>["Goals","Challenges"];
+  String initialValueForGType = "Goals";
+  List itemsForGType = <String>["Goals","Challenges"];
 
-  List <TrellisLadderDataModel> trellisLadderDataForGoalsAchievements = [];
+  List <TrellisLadderDataModel> trellisLadderData = [];
   List <TrellisLadderDataModel> trellisLadderDataForGoals = [];
+  List <TrellisLadderDataModel> trellisLadderDataForChallenges = [];
+  List <TrellisLadderDataModel> trellisLadderDataForMemoriesAndAchievements = [];
+
+
   List <bool> trellisExpiryDateColor = [];
- List <TrellisLadderDataModel> trellisLadderDataForGoalsChallenges = [];
-  List <TrellisLadderDataModel> trellisLadderDataForAchievements = [];
   int isLadderGoals = 2;
+  int isLadderChallenges = 2;
+  int isLadderMemories = 2;
   int isLadderAchievements = 2;
 
   TextEditingController dateForGController = TextEditingController();
@@ -174,38 +178,60 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
       _isLoading = true;
     });
     HTTPManager().trellisRead(TrellisRequestModel(userId: id,table: 'ladder')).then((value) {
+      print('TrellisRequestModel ===================>');
       // trellisLadderDataForGoalsAchievements.clear();
       // trellisLadderDataForGoalsChallenges.clear();
       // trellisLadderDataForGoals.clear();
       // trellisLadderDataForAchievements.clear();
 
+
       TrellisLadderDataListModel trellisLadderDataListModel  = TrellisLadderDataListModel.fromJson(value['data']);
-      trellisLadderDataForGoalsAchievements = trellisLadderDataListModel.values;
+      print('TrellisLadderList ===================> ${trellisLadderDataListModel.length}');
 
-      for(int i=0; i<trellisLadderDataForGoalsAchievements.length;i++) {
-        if (trellisLadderDataForGoalsAchievements[i].type.toString() == "goal") {
+      trellisLadderData = trellisLadderDataListModel.values;
 
-          if(trellisLadderDataForGoalsAchievements[i].option2 == "Challenges") {
-            print("Challenges calling");
-            trellisLadderDataForGoalsChallenges.add(trellisLadderDataForGoalsAchievements[i]);
-          } else {
+      for(int i=0; i < trellisLadderData.length;i++){
+        if(trellisLadderData[i].type.toString() == "goal"){
+          trellisLadderDataForGoals.add(trellisLadderData[i]);
+        }else if(trellisLadderData[i].type.toString() == "challenges"){
+          trellisLadderDataForChallenges.add(trellisLadderData[i]);
+        }else {
+          trellisLadderDataForMemoriesAndAchievements.add(trellisLadderData[i]);
+        }
 
-            trellisLadderDataForGoals.add(trellisLadderDataForGoalsAchievements[i]);
-          }
-        } else {
-          trellisLadderDataForAchievements.add(trellisLadderDataForGoalsAchievements[i]);
-               }
+
+        trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
+        trellisLadderDataForChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
+        trellisLadderDataForMemoriesAndAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
+
+
+
+        // trellisLadderDataForGoalsAchievements = trellisLadderDataListModel.values;
+        //
+        // for(int i=0; i< trellisLadderDataForGoalsAchievements.length;i++) {
+        //   if (trellisLadderDataForGoalsAchievements[i].type.toString() == "goal") {
+        //     if(trellisLadderDataForGoalsAchievements[i].option2 == "Challenges") {
+        //       print("Challenges calling");
+        //       trellisLadderDataForGoalsChallenges.add(trellisLadderDataForGoalsAchievements[i]);
+        //     } else {
+        //
+        //       trellisLadderDataForGoals.add(trellisLadderDataForGoalsAchievements[i]);
+        //     }
+        //   } else {
+        //     trellisLadderDataForAchievements.add(trellisLadderDataForGoalsAchievements[i]);
+        //          }
+        // }
+        //
+        // //trellisLadderDataForGoalsChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
+        // trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
+        // trellisLadderDataForAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
+        // trellisLadderDataForGoalsChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
+        setState(() {
+          _isLoading = false;
+        });
+        // ignore: avoid_print
+        print("Ladder Data Load");
       }
-
-      //trellisLadderDataForGoalsChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
-      trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
-      trellisLadderDataForAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
-      trellisLadderDataForGoalsChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
-      setState(() {
-        _isLoading = false;
-      });
-      // ignore: avoid_print
-      print("Ladder Data Load");
       // setState(() {
       //   _isLoading = false;
       // });
@@ -345,78 +371,114 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
               print(userPremium);
 
               setState(() {
-                 initialValueForType = "physical";
-                 initialValueForMType = "Memories";
-                 initialValueForGoals = "Goals";
-                 initialValueForMGoals = "Goals";
-                 titleForGController.clear();
-                 descriptionForGController.clear();
-                 dateForGController.clear();
-                 dateForGController.text = "";
-                 descriptionForGController.text = "";
-                 titleForGController.text = "";
+                initialValueForType = "Physical";
+                initialValueForMType = "Memories";
+                initialValueForLadderType = "Goals";
+                initialValueForGType = "Goals";
+                titleForGController.clear();
+                descriptionForGController.clear();
+                dateForGController.clear();
+                dateForGController.text = "";
+                descriptionForGController.text = "";
+                titleForGController.text = "";
               });
-              ladderBottomSheet(false,context,true,"Ladder","Goals/Challenges",
-                      initialValueForType,itemsForType,
-                      initialValueForGoals,itemsForGoals,
-                          () async {
-                            SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-                            bool isGoalsValue = sharedPreferences.getBool("IsGoals")!;
+              ladderBottomSheet(false,context,true,true,"Ladder",
+                  initialValueForType,itemsForType,
+                  initialValueForLadderType, itemsForLadderType,
+                  initialValueForMType, itemsForMType,
+                  initialValueForGType, itemsForGType,
+                      () async {
+                    print('Ladder Type ===========> $initialValueForLadderType' );
+                    print('Type ===========> $initialValueForType' );
+                    if(userPremium == "no" && trellisLadderDataForGoals.length >= isLadderGoals && trellisLadderDataForChallenges.length >= isLadderChallenges && trellisLadderDataForMemoriesAndAchievements.length >= isLadderAchievements){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
+                    }else{
+                      if(initialValueForLadderType != "Challenges"){
+                        if(dateForGController.text.isEmpty) {
+                          showToastMessage(context, "Please select a date", false);
+                          return;
+                        }
+                      }
 
-                            if(isGoalsValue) {
-                              if(userPremium == "no" && trellisLadderDataForGoals.length>=isLadderGoals) {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
-                              } else {
-                                print("Goals Saving");
-                                if(initialValueForType == "Memories" || initialValueForType == "Achievements")
-                                {
-                                  setState(() {
-                                    initialValueForType = "physical";
-                                  });
-                                }
-                                if(initialValueForGoals == "Challenges") {
+                      if(initialValueForLadderType == "Goals" || initialValueForLadderType == "Challenges"){
+                        print('Initial Value For Ladder Type is Goals or Challenges ========> ');
+                        print(initialValueForLadderType);
+                        print(initialValueForType);
+                        _setLadderGoalsData();
 
-                                  _setLadderGoalsData();
-                                } else {
-                                    if(dateForGController.text.isNotEmpty) {
-                                      _setLadderGoalsData();
-                                    } else {
-                                      showToastMessage(context, "Please select a date", false);
-                                    }
-                                }
+                      }else if(initialValueForLadderType == "Memories" || initialValueForLadderType == "Achievements"){
+                        print('Initial Value For Ladder Type is Memories or Achievements ========> ');
+                        initialValueForType = "";
+                        print(initialValueForLadderType);
+                        print(initialValueForType);
+                        _setLadderMemoriesData();
+                      }
 
-                              }
-                            } else {
-                              if(userPremium == "no" && trellisLadderDataForAchievements.length>=isLadderAchievements) {
-                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
-                                  } else {
-                                print("Memories saving");
-                                if(initialValueForType == "physical" || initialValueForType == "Emotional" || initialValueForType =="Relational" || initialValueForType =="Work" || initialValueForType =="Financial" || initialValueForType =="Spiritual")
-                                  {
-                                    setState(() {
-                                      initialValueForType = "Memories";
-                                    });
-                                  }
-                                _setLadderMemoriesData();
-                              }
-                            }
-                      },
-                          (value) {
-                            print(value);
-                        setState(() {
-                          initialValueForGoals = value;
-                        });
-                      },
-                          (value) {
+
+
+                    }
+
+
+
+
+                    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                    // bool isGoalsValue = sharedPreferences.getBool("IsGoals")!;
+                    // if(isGoalsValue) {
+                    //   String ladderType = sharedPreferences.getString('ladderType') ?? 'goal';
+                    //   if(userPremium == "no" && trellisLadderDataForGoals.length>=isLadderGoals) {
+                    //     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
+                    //   } else {
+                    //     print("Goals Saving");
+                    //     if(initialValueForType == "Memories" || initialValueForType == "Achievements")
+                    //     {
+                    //       setState(() {
+                    //         initialValueForType = "physical";
+                    //       });
+                    //     }
+                    //     if(initialValueForGoals == "Challenges") {
+                    //
+                    //       _setLadderGoalsData(ladderType);
+                    //     } else {
+                    //         if(dateForGController.text.isNotEmpty) {
+                    //           _setLadderGoalsData(ladderType);
+                    //         } else {
+                    //           showToastMessage(context, "Please select a date", false);
+                    //         }
+                    //     }
+                    //
+                    //   }
+                    // } else {
+                    //   String ladderType = sharedPreferences.getString('ladderType') ?? 'achievements';
+                    //   if(userPremium == "no" && trellisLadderDataForAchievements.length>=isLadderAchievements) {
+                    //         Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
+                    //       } else {
+                    //     print("Memories saving");
+                    //     if(initialValueForType == "physical" || initialValueForType == "Emotional" || initialValueForType =="Relational" || initialValueForType =="Work" || initialValueForType =="Financial" || initialValueForType =="Spiritual")
+                    //       {
+                    //         setState(() {
+                    //           initialValueForType = "Memories";
+                    //         });
+                    //       }
+                    //     _setLadderMemoriesData(ladderType);
+                    //   }
+                    // }
+                  },
+                      (value) {
                     print(value);
-                        setState(() {
-                          initialValueForType = value;
-                        });
-                      },
-                      dateForGController,
-                      titleForGController,
-                      descriptionForGController
-                  );
+                    setState(() {
+                      initialValueForLadderType = value;
+                    });
+                  },
+                      (value) {
+                    print(value);
+                    setState(() {
+                      initialValueForType = value;
+                    });
+                  },
+                  dateForGController,
+                  titleForGController,
+                  descriptionForGController
+              );
               },
             child: const Icon(Icons.add,size:40,color: AppColors.backgroundColor,),
           ),
@@ -483,7 +545,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                               onTap: () {
                                 showDialog(
                                   context: context,
-                                  builder: (BuildContext context) => _buildPopupDialog(context,"Goals/Challenges",trellisLadderDataForGoals[index],true),
+                                  builder: (BuildContext context) => _buildPopupDialog(context,"Goals",trellisLadderDataForGoals[index],true),
                                 );
                               },
                               child: Container(
@@ -528,45 +590,54 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                     titleForGController.text = "";
                                                   });
                                                   setState(() {
-                                                    initialValueForType = trellisLadderDataForGoals[index].option1!.capitalize();
-                                                    initialValueForGoals = trellisLadderDataForGoals[index].option2!;
+                                                    initialValueForType = trellisLadderDataForGoals[index].option1!;
+                                                    initialValueForLadderType = trellisLadderDataForGoals[index].option2!;
                                                     dateForGController.text = trellisLadderDataForGoals[index].date!;
                                                     titleForGController.text = trellisLadderDataForGoals[index].text!;
                                                     descriptionForGController.text = trellisLadderDataForGoals[index].description!;
                                                   });
 
-                                                  ladderBottomSheet(true,context,true,"Ladder","Goals/Challenges",
+                                                  ladderBottomSheet(false,context,true,true,"Ladder",
                                                       initialValueForType,itemsForType,
-                                                      initialValueForGoals,itemsForGoals,
+                                                      initialValueForLadderType, itemsForLadderType,
+                                                      initialValueForMType, itemsForMType,
+                                                      initialValueForGType, itemsForGType,
                                                           () async {
-
-                                                        if(userPremium == "no" && trellisLadderDataForGoals.length>=isLadderGoals) {
+                                                        print('Ladder Type ===========> $initialValueForLadderType' );
+                                                        print('Type ===========> $initialValueForType' );
+                                                        if(userPremium == "no" && trellisLadderDataForGoals.length >= isLadderGoals && trellisLadderDataForChallenges.length >= isLadderChallenges && trellisLadderDataForMemoriesAndAchievements.length >= isLadderAchievements){
                                                           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
-                                                        } else {
-                                                          print("Goals Saving");
-                                                          if(initialValueForType == "Memories" || initialValueForType == "Achievements")
-                                                          {
-                                                            setState(() {
-                                                              initialValueForType = "physical";
-                                                            });
-                                                          }
-                                                          if(initialValueForGoals == "Challenges") {
-
-                                                            _updateLadderGoalsData("Goals",trellisLadderDataForGoals[index].id.toString(),index);
-                                                          } else {
-                                                            if(dateForGController.text.isNotEmpty) {
-                                                              _updateLadderGoalsData("Goals",trellisLadderDataForGoals[index].id.toString(),index);
-                                                            } else {
+                                                        }else{
+                                                          if(initialValueForLadderType != "Challenges"){
+                                                            if(dateForGController.text.isEmpty) {
                                                               showToastMessage(context, "Please select a date", false);
+                                                              return;
                                                             }
                                                           }
 
+                                                          if(initialValueForLadderType == "Goals" || initialValueForLadderType == "Challenges"){
+                                                            print('Initial Value For Ladder Type is Goals or Challenges ========> ');
+                                                            print(initialValueForLadderType);
+                                                            print(initialValueForType);
+                                                            _updateLadderGoalsData('goal',trellisLadderDataForGoals[index].id!, index);
+
+
+
+                                                          }else if(initialValueForLadderType == "Memories" || initialValueForLadderType == "Achievements"){
+                                                            print('Initial Value For Ladder Type is Memories or Achievements ========> ');
+                                                            initialValueForType = "";
+                                                            print(initialValueForLadderType);
+                                                            print(initialValueForType);
+                                                            _updateLadderMemoriesData('goal',trellisLadderDataForGoals[index].id!,index);
+
+                                                          }
                                                         }
+
                                                       },
                                                           (value) {
                                                         print(value);
                                                         setState(() {
-                                                          initialValueForGoals = value;
+                                                          initialValueForLadderType = value;
                                                         });
                                                       },
                                                           (value) {
@@ -588,7 +659,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                     },
                                                     icon: const Icon(Icons.share,color: AppColors.primaryColor,)),
                                                 IconButton(onPressed: () {
-                                                  showDeletePopup( "goal",trellisLadderDataForGoals[index].id.toString(),index,trellisLadderDataForGoals[index].option2!);
+                                                  showDeletePopup("goal",trellisLadderDataForGoals[index].id.toString(),index,trellisLadderDataForGoals[index].option2!);
                                                 }, icon: const Icon(Icons.delete,color: AppColors.redColor,),),
                                               ],
                                             )
@@ -614,16 +685,16 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                     ),
                     _isLoading ? const Center() : Container(
                       margin:const EdgeInsets.symmetric(horizontal: 10),
-                      child: trellisLadderDataForGoalsChallenges.isEmpty ? const Text("No data available") : ListView.builder(
+                      child: trellisLadderDataForChallenges.isEmpty ? const Text("No data available") : ListView.builder(
                           physics:const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount:trellisLadderDataForGoalsChallenges.length,
+                          itemCount:trellisLadderDataForChallenges.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
                                 showDialog(
                                   context: context,
-                                  builder: (BuildContext context) => _buildPopupDialog(context,"Goals/Challenges",trellisLadderDataForGoalsChallenges[index],true),
+                                  builder: (BuildContext context) => _buildPopupDialog(context,"Challenges",trellisLadderDataForChallenges[index],true),
                                 );
                               },
                               child: Container(
@@ -638,7 +709,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text("${trellisLadderDataForGoalsChallenges[index].option1?.capitalize()} ${ trellisLadderDataForGoalsChallenges[index].option2}",style:const TextStyle(color: AppColors.primaryColor,fontWeight: FontWeight.bold),),
+                                          Text("${trellisLadderDataForChallenges[index].option1?.capitalize()} ${ trellisLadderDataForChallenges[index].option2}",style:const TextStyle(color: AppColors.primaryColor,fontWeight: FontWeight.bold),),
                                           if(!otherUserLoggedIn)
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -646,9 +717,9 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                 GestureDetector(
                                                   onTap: () {
                                                     print(isFavourite);
-                                                    _setLadderFavouriteItem(index,trellisLadderDataForGoalsChallenges[index].id.toString(),trellisLadderDataForGoalsChallenges[index].favourite.toString(),true);
+                                                    _setLadderFavouriteItem(index,trellisLadderDataForChallenges[index].id.toString(),trellisLadderDataForChallenges[index].favourite.toString(),true);
                                                   },
-                                                  child: trellisLadderDataForGoalsChallenges[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
+                                                  child: trellisLadderDataForChallenges[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
                                                 ),
                                                 IconButton(onPressed: () async {
                                                   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -660,45 +731,54 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                     titleForGController.text = "";
                                                   });
                                                   setState(() {
-                                                    initialValueForType = trellisLadderDataForGoalsChallenges[index].option1!.capitalize();
-                                                    initialValueForGoals = trellisLadderDataForGoalsChallenges[index].option2!;
+                                                    initialValueForType = trellisLadderDataForChallenges[index].option1!.capitalize();
+                                                    initialValueForLadderType = trellisLadderDataForChallenges[index].option2!;
                                                     // dateForGController.text = trellisLadderDataForGoalsChallenges[index].date!;
-                                                    titleForGController.text = trellisLadderDataForGoalsChallenges[index].text!;
-                                                    descriptionForGController.text = trellisLadderDataForGoalsChallenges[index].description!;
+                                                    titleForGController.text = trellisLadderDataForChallenges[index].text!;
+                                                    descriptionForGController.text = trellisLadderDataForChallenges[index].description!;
                                                   });
 
-                                                  ladderBottomSheet(true,context,true,"Ladder","Goals/Challenges",
+                                                  ladderBottomSheet(false,context,true,false,"Ladder",
                                                       initialValueForType,itemsForType,
-                                                      initialValueForGoals,itemsForGoals,
+                                                      initialValueForLadderType, itemsForLadderType,
+                                                      initialValueForMType, itemsForMType,
+                                                      initialValueForGType, itemsForGType,
                                                           () async {
-
-                                                        if(userPremium == "no" && trellisLadderDataForGoalsChallenges.length>=isLadderGoals) {
+                                                        print('Ladder Type ===========> $initialValueForLadderType' );
+                                                        print('Type ===========> $initialValueForType' );
+                                                        if(userPremium == "no" && trellisLadderDataForGoals.length >= isLadderGoals && trellisLadderDataForChallenges.length >= isLadderChallenges && trellisLadderDataForMemoriesAndAchievements.length >= isLadderAchievements){
                                                           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
-                                                        } else {
-                                                          print("Goals Saving");
-                                                          if(initialValueForType == "Memories" || initialValueForType == "Achievements")
-                                                          {
-                                                            setState(() {
-                                                              initialValueForType = "physical";
-                                                            });
-                                                          }
-                                                          if(initialValueForGoals == "Challenges") {
-
-                                                            _updateLadderGoalsData("Challenges",trellisLadderDataForGoalsChallenges[index].id.toString(),index);
-                                                          } else {
-                                                            if(dateForGController.text.isNotEmpty) {
-                                                              _updateLadderGoalsData("Challenges",trellisLadderDataForGoalsChallenges[index].id.toString(),index);
-                                                            } else {
+                                                        }else{
+                                                          if(initialValueForLadderType != "Challenges"){
+                                                            if(dateForGController.text.isEmpty) {
                                                               showToastMessage(context, "Please select a date", false);
+                                                              return;
                                                             }
                                                           }
 
+                                                          if(initialValueForLadderType == "Goals" || initialValueForLadderType == "Challenges"){
+                                                            print('Initial Value For Ladder Type is Goals or Challenges ========> ');
+                                                            print(initialValueForLadderType);
+                                                            print(initialValueForType);
+                                                            _updateLadderGoalsData('challenges',trellisLadderDataForChallenges[index].id!, index);
+
+
+
+                                                          }else if(initialValueForLadderType == "Memories" || initialValueForLadderType == "Achievements"){
+                                                            print('Initial Value For Ladder Type is Memories or Achievements ========> ');
+                                                            initialValueForType = "";
+                                                            print(initialValueForLadderType);
+                                                            print(initialValueForType);
+                                                            _updateLadderMemoriesData('challenges',trellisLadderDataForChallenges[index].id!,index);
+
+                                                          }
                                                         }
+
                                                       },
                                                           (value) {
                                                         print(value);
                                                         setState(() {
-                                                          initialValueForGoals = value;
+                                                          initialValueForLadderType = value;
                                                         });
                                                       },
                                                           (value) {
@@ -716,11 +796,11 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                 }, icon: const Icon(Icons.edit,color: AppColors.primaryColor,),),
                                                 IconButton(
                                                     onPressed: () async {
-                                                      showThumbsUpDialogue(context, _animationController, id, 'ladder', trellisLadderDataForGoalsChallenges[index].id.toString(), selectedUserAcceptedConnectionsListResponse, searchAcceptedConnectionsListResponse, acceptedConnectionsListResponse);
+                                                      showThumbsUpDialogue(context, _animationController, id, 'ladder', trellisLadderDataForChallenges[index].id.toString(), selectedUserAcceptedConnectionsListResponse, searchAcceptedConnectionsListResponse, acceptedConnectionsListResponse);
                                                     },
                                                     icon: const Icon(Icons.share,color: AppColors.primaryColor,)),
                                                 IconButton(onPressed: () {
-                                                  showDeletePopup( "goal",trellisLadderDataForGoalsChallenges[index].id.toString(),index,trellisLadderDataForGoalsChallenges[index].option2!);
+                                                  showDeletePopup("challenges",trellisLadderDataForChallenges[index].id.toString(),index,trellisLadderDataForChallenges[index].type!);
                                                 }, icon: const Icon(Icons.delete,color: AppColors.redColor,),),
                                               ],
                                             )
@@ -728,7 +808,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                       ),
                                       Align(
                                           alignment: Alignment.topLeft,
-                                          child: Text("${trellisLadderDataForGoalsChallenges[index].option2 == "Challenges" ? "" : DateFormat('MM-dd-yy').format(DateTime.parse(trellisLadderDataForGoalsChallenges[index].date.toString()))} ${trellisLadderDataForGoalsChallenges[index].option2 == "Challenges" ? "" : "|" } ${trellisLadderDataForGoalsChallenges[index].text}"))
+                                          child: Text("${trellisLadderDataForChallenges[index].option2 == "Challenges" ? "" : DateFormat('MM-dd-yy').format(DateTime.parse(trellisLadderDataForChallenges[index].date.toString()))} ${trellisLadderDataForChallenges[index].option2 == "Challenges" ? "" : "|" } ${trellisLadderDataForChallenges[index].text}"))
                                     ],
                                   )),
                             );
@@ -749,13 +829,13 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                       child: ListView.builder(
                           shrinkWrap: true,
                           physics:const NeverScrollableScrollPhysics(),
-                          itemCount:trellisLadderDataForAchievements.length,
+                          itemCount:trellisLadderDataForMemoriesAndAchievements.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
                                 showDialog(
                                   context: context,
-                                  builder: (BuildContext context) => _buildPopupDialog(context,"Memories/Achievements",trellisLadderDataForAchievements[index],true),
+                                  builder: (BuildContext context) => _buildPopupDialog(context,"Memories/Achievements",trellisLadderDataForMemoriesAndAchievements[index],true),
                                 );
                               },
                               child: Container(
@@ -770,7 +850,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text("${trellisLadderDataForAchievements[index].option1?.capitalize()}",style:const TextStyle(color: AppColors.primaryColor,fontWeight: FontWeight.bold),),
+                                          Text("${trellisLadderDataForMemoriesAndAchievements[index].option2?.capitalize()}",style:const TextStyle(color: AppColors.primaryColor,fontWeight: FontWeight.bold),),
                                           if(!otherUserLoggedIn)
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -778,9 +858,9 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                 GestureDetector(
                                                   onTap: () {
                                                     print(isFavourite);
-                                                    _setLadderFavouriteItem(index,trellisLadderDataForAchievements[index].id.toString(),trellisLadderDataForAchievements[index].favourite.toString(),false);
+                                                    _setLadderFavouriteItem(index,trellisLadderDataForMemoriesAndAchievements[index].id.toString(),trellisLadderDataForMemoriesAndAchievements[index].favourite.toString(),false);
                                                   },
-                                                  child: trellisLadderDataForAchievements[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
+                                                  child: trellisLadderDataForMemoriesAndAchievements[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
                                                 ),
                                                 IconButton(
                                                   onPressed: () async {
@@ -795,36 +875,55 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                       titleForGController.text = "";
                                                     });
                                                     setState(() {
-                                                      DateTime date1 = DateTime.parse(trellisLadderDataForAchievements[index].date!);
-                                                      initialValueForMType = trellisLadderDataForAchievements[index].option1!.capitalize();
-                                                      dateForGController.text = DateFormat('MM-dd-yy').format(date1);
-                                                      titleForGController.text = trellisLadderDataForAchievements[index].text!;
-                                                      descriptionForGController.text = trellisLadderDataForAchievements[index].description!;
+                                                      initialValueForLadderType = trellisLadderDataForMemoriesAndAchievements[index].option2!.capitalize();
+                                                      initialValueForType = 'Physical';
+                                                      dateForGController.text = trellisLadderDataForMemoriesAndAchievements[index].date!;
+                                                      titleForGController.text = trellisLadderDataForMemoriesAndAchievements[index].text!;
+                                                      descriptionForGController.text = trellisLadderDataForMemoriesAndAchievements[index].description!;
                                                     });
 
-                                                    ladderBottomSheet(true,context,false,"Ladder","Goals/Challenges",
-                                                        initialValueForMType,itemsForType,
-                                                        initialValueForGoals,itemsForGoals,
+
+                                                    ladderBottomSheet(false,context,false,true,"Ladder",
+                                                        initialValueForType,itemsForType,
+                                                        initialValueForLadderType, itemsForLadderType,
+                                                        initialValueForMType, itemsForMType,
+                                                        initialValueForGType, itemsForGType,
                                                             () async {
-
-
-                                                          if(userPremium == "no" && trellisLadderDataForAchievements.length>=isLadderAchievements) {
+                                                          print('Ladder Type ===========> $initialValueForLadderType' );
+                                                          print('Type ===========> $initialValueForType' );
+                                                          if(userPremium == "no" && trellisLadderDataForGoals.length >= isLadderGoals && trellisLadderDataForChallenges.length >= isLadderChallenges && trellisLadderDataForMemoriesAndAchievements.length >= isLadderAchievements){
                                                             Navigator.of(context).push(MaterialPageRoute(builder: (context)=>StripePayment(true)));
-                                                          } else {
-                                                            print("Memories saving");
-                                                            if(initialValueForType == "physical" || initialValueForType == "Emotional" || initialValueForType =="Relational" || initialValueForType =="Work" || initialValueForType =="Financial" || initialValueForType =="Spiritual")
-                                                            {
-                                                              setState(() {
-                                                                initialValueForType = "Memories";
-                                                              });
+                                                          }else{
+                                                            if(initialValueForLadderType != "Challenges"){
+                                                              if(dateForGController.text.isEmpty) {
+                                                                showToastMessage(context, "Please select a date", false);
+                                                                return;
+                                                              }
                                                             }
-                                                            _updateLadderMemoriesData(trellisLadderDataForAchievements[index].id.toString(),index);
+
+                                                            if(initialValueForLadderType == "Goals" || initialValueForLadderType == "Challenges"){
+                                                              print('Initial Value For Ladder Type is Goals or Challenges ========> ');
+                                                              print(initialValueForLadderType);
+                                                              print(initialValueForType);
+                                                              _updateLadderGoalsData('',trellisLadderDataForMemoriesAndAchievements[index].id!, index);
+
+
+
+                                                            }else if(initialValueForLadderType == "Memories" || initialValueForLadderType == "Achievements"){
+                                                              print('Initial Value For Ladder Type is Memories or Achievements ========> ');
+                                                              initialValueForType = "";
+                                                              print(initialValueForLadderType);
+                                                              print(initialValueForType);
+                                                              _updateLadderMemoriesData('',trellisLadderDataForMemoriesAndAchievements[index].id!,index);
+
+                                                            }
                                                           }
+
                                                         },
                                                             (value) {
                                                           print(value);
                                                           setState(() {
-                                                            initialValueForGoals = value;
+                                                            initialValueForLadderType = value;
                                                           });
                                                         },
                                                             (value) {
@@ -842,11 +941,11 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                   }, icon: const Icon(Icons.edit,color: AppColors.primaryColor,),),
                                                 IconButton(
                                                     onPressed: () async {
-                                                      showThumbsUpDialogue(context, _animationController, id, 'ladder', trellisLadderDataForAchievements[index].id.toString(), selectedUserAcceptedConnectionsListResponse, searchAcceptedConnectionsListResponse, acceptedConnectionsListResponse);
+                                                      showThumbsUpDialogue(context, _animationController, id, 'ladder', trellisLadderDataForMemoriesAndAchievements[index].id.toString(), selectedUserAcceptedConnectionsListResponse, searchAcceptedConnectionsListResponse, acceptedConnectionsListResponse);
                                                     },
                                                     icon: const Icon(Icons.share,color: AppColors.primaryColor,)),
                                                 IconButton(onPressed: () {
-                                                  showDeletePopup( "achievements",trellisLadderDataForAchievements[index].id.toString(),index,"");
+                                                  showDeletePopup( trellisLadderDataForMemoriesAndAchievements[index].type ?? 'memories',trellisLadderDataForMemoriesAndAchievements[index].id.toString(),index,"");
                                                 }, icon: const Icon(Icons.delete,color: AppColors.redColor,),),
                                               ],
                                             )
@@ -854,7 +953,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                       ),
                                       Align(
                                           alignment: Alignment.topLeft,
-                                          child: Text("${DateFormat('MM-dd-yy').format(DateTime.parse(trellisLadderDataForAchievements[index].date.toString()))} | ${trellisLadderDataForAchievements[index].text}"))
+                                          child: Text("${DateFormat('MM-dd-yy').format(DateTime.parse(trellisLadderDataForMemoriesAndAchievements[index].date.toString()))} | ${trellisLadderDataForMemoriesAndAchievements[index].text}"))
                                     ],
                                   )),
                             );
@@ -940,38 +1039,44 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                       child: Text("Type: ",style: TextStyle(fontWeight: FontWeight.bold),)),
                   Expanded(
                       flex: 2,
-                      child: Text(trellisLadderDataModel1.type!)),
+                      child: Text(trellisLadderDataModel1.type?.capitalize() ?? '')),
                 ],
               ),
             ),
-            Container(
-              margin:const EdgeInsets.symmetric(vertical: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Expanded(
-                      flex:1,
-                      child: Text("Category: ",style: TextStyle(fontWeight: FontWeight.bold),)),
-                  Expanded(
-                      flex: 2,
-                      child: Text(trellisLadderDataModel1.option1!.capitalize())),
-                ],
+            Visibility(
+              visible: trellisLadderDataModel1.type == 'goal' || trellisLadderDataModel1.type == 'challenges' ,
+              child: Container(
+                margin:const EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Expanded(
+                        flex:1,
+                        child: Text("Category: ",style: TextStyle(fontWeight: FontWeight.bold),)),
+                    Expanded(
+                        flex: 2,
+                        child: Text(trellisLadderDataModel1.option1?.capitalize() ?? '')),
+                  ],
+                ),
               ),
             ),
-            Container(
-              margin:const EdgeInsets.symmetric(vertical: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Expanded(
-                      flex:1,
-                      child: Text("Date: ",style: TextStyle(fontWeight: FontWeight.bold),)),
-                  Expanded(
-                      flex: 2,
-                      child: Text(trellisLadderDataModel1.option2! == "Challenges" ? "" :DateFormat('MM-dd-yy').format(DateTime.parse(trellisLadderDataModel1.date.toString())))),
-                ],
+            Visibility(
+              visible: trellisLadderDataModel1.type != 'challenges',
+              child: Container(
+                margin:const EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Expanded(
+                        flex:1,
+                        child: Text("Date: ",style: TextStyle(fontWeight: FontWeight.bold),)),
+                    Expanded(
+                        flex: 2,
+                        child: Text(trellisLadderDataModel1.option2! == "Challenges" ? "" :DateFormat('MM-dd-yy').format(DateTime.parse(trellisLadderDataModel1.date.toString())))),
+                  ],
+                ),
               ),
             ),
             Container(
@@ -996,11 +1101,8 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Expanded(
-                      flex:1,
-                      child:  Text("Description: ",style: TextStyle(fontWeight: FontWeight.bold),)),
+                  const Text("Description: ",style: TextStyle(fontWeight: FontWeight.bold)),
                   Expanded(
-                      flex: 2,
                       child: Text(trellisLadderDataModel1.description!)),
                 ],
               ),
@@ -1042,19 +1144,13 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
           text: value['data']['text'],
           description: value['data']['description'],
       );
-      if(isGoals) {
-        if(value['data']['option2'] == "Challenges") {
-          setState(() {
-            trellisLadderDataForGoalsChallenges[indexItem] = trellisLadderDataModel;
-          });
-        }else {
-          setState(() {
-            trellisLadderDataForGoals[indexItem] = trellisLadderDataModel;
-          });
-        }
-      } else {
+      if(trellisLadderDataModel.type == "goal"){
+        trellisLadderDataForGoals[indexItem] = trellisLadderDataModel;
+      }else if(trellisLadderDataModel.type == "challenges"){
+        trellisLadderDataForChallenges[indexItem] = trellisLadderDataModel;
+      }else{
         setState(() {
-          trellisLadderDataForAchievements[indexItem] = trellisLadderDataModel;
+          trellisLadderDataForMemoriesAndAchievements[indexItem] = trellisLadderDataModel;
         });
       }
       setState(() {
@@ -1074,43 +1170,52 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
     // ignore: avoid_print
     // print("Selected Date:${dateForGController.text}");
 
-    if(initialValueForGoals != "" && titleForGController.text.isNotEmpty) {
+    print('Setting Ladder Goals Data  =================> Ladder Type = $initialValueForLadderType');
+
+    if(initialValueForLadderType != "" && titleForGController.text.isNotEmpty) {
       setState(() {
         _isDataLoading = true;
       });
-      HTTPManager().trellisLadderForGoals(TrellisLadderGoalsRequestModel(userId: id,type: "goal",option1: initialValueForType,option2: initialValueForGoals,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text,insertFrom: "ladder")).then((value) {
+
+
+
+
+      HTTPManager().trellisLadderForGoals(TrellisLadderGoalsRequestModel(userId: id,type: initialValueForLadderType == "Goals" ? "goal" : initialValueForLadderType.toLowerCase(),option1: initialValueForType,option2: initialValueForLadderType,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text,insertFrom: "ladder")).then((value) {
 
         Navigator.of(context).pop();
         setState(() {
-          initialValueForType = "physical";
+          initialValueForLadderType = "Goals";
+          initialValueForType = "Physical";
           initialValueForMType = "Memories";
-          initialValueForGoals = "Goals";
-          initialValueForMGoals = "Goals";
+          initialValueForGType = "Goals";
           dateForGController.text = "";
           titleForGController.text = "";
           descriptionForGController.text = "";
         });
+        print('After Setting Ladder Goals Data  =================> Ladder Type = ${value['post_data']['type']}');
 
         TrellisLadderDataModel trellisLadderDataModel = TrellisLadderDataModel(
           id: value['post_data']['id'].toString(),
           userId: value['post_data']['user_id'].toString(),
           type: value['post_data']['type'].toString(),
-          favourite: value['post_data']['favourite'].toString(),
+          favourite: "no",
           option1: value['post_data']['option1'].toString(),
           option2: value['post_data']['option2'].toString(),
           date: value['post_data']['date'].toString(),
           text: value['post_data']['text'].toString(),
           description: value['post_data']['description'].toString(),
         );
-        if(trellisLadderDataModel.option2 == "Challenges") {
-          trellisLadderDataForGoalsChallenges.add(trellisLadderDataModel);
+        if(trellisLadderDataModel.type == "challenges") {
+          trellisLadderDataForChallenges.add(trellisLadderDataModel);
+          trellisLadderDataForChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
         } else {
           trellisLadderDataForGoals.add(trellisLadderDataModel);
+          trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
         }
 
-        trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
 
-        trellisLadderDataForGoalsChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
+
+
 
         setState(() {
           _isDataLoading = false;
@@ -1130,64 +1235,71 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
     }
   }
 
-  _updateLadderGoalsData(String updateType, String ladderGoalsId, int index1) {
-    print("Ladder Goals ID");
-    print(updateType);
+  _updateLadderGoalsData(String updateType,String ladderGoalsId, int index1) {
     // ignore: avoid_print
     // print("Selected Date:${dateForGController.text}");
 
-    if(initialValueForGoals != "" && titleForGController.text.isNotEmpty) {
+    if(initialValueForLadderType != "" && titleForGController.text.isNotEmpty) {
       setState(() {
         _isDataLoading = true;
       });
-      HTTPManager().trellisLadderForGoalsUpdate(TrellisLadderGoalsUpdateRequestModel(ladderId: ladderGoalsId,type: "goal",option1: initialValueForType,option2: initialValueForGoals,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text)).then((value) {
-        if(updateType == "Challenges") {
-          setState(() {
-            trellisLadderDataForGoalsChallenges.removeAt(index1);
-          });
+      HTTPManager().trellisLadderForGoalsUpdate(TrellisLadderGoalsUpdateRequestModel(ladderId: ladderGoalsId,type: initialValueForLadderType == "Goals" ? 'goal' :  initialValueForLadderType.toLowerCase(),option1: initialValueForType,option2: initialValueForLadderType,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text)).then((value) {
 
-        } else {
+
+
+        Navigator.of(context).pop();
+
+        if(updateType == "challenges") {
+          setState(() {
+            trellisLadderDataForChallenges.removeAt(index1);
+          });
+        } else if(updateType == "goal") {
           setState(() {
             trellisLadderDataForGoals.removeAt(index1);
           });
+        }else{
+          setState(() {
+            trellisLadderDataForMemoriesAndAchievements.removeAt(index1);
+          });
         }
-        Navigator.of(context).pop();
+
         setState(() {
-          initialValueForType = "physical";
+          initialValueForLadderType = "Goals";
+          initialValueForType = "Physical";
           initialValueForMType = "Memories";
-          initialValueForGoals = "Goals";
-          initialValueForMGoals = "Goals";
+          initialValueForGType = "Goals";
           dateForGController.text = "";
           titleForGController.text = "";
           descriptionForGController.text = "";
         });
-        
+
         final now = DateTime.now();
         final expirationDate = DateTime.parse(value['updated_data']['date'].toString());
         final bool isExpired = expirationDate.isBefore(now);
 
         TrellisLadderDataModel trellisLadderDataModel = TrellisLadderDataModel(
-          id: value['updated_data']['id'].toString(),
-          userId: value['updated_data']['user_id'].toString(),
-          type: value['updated_data']['type'].toString(),
-          favourite: value['updated_data']['favourite'].toString(),
-          option1: value['updated_data']['option1'].toString(),
-          option2: value['updated_data']['option2'].toString(),
-          date: value['updated_data']['date'].toString(),
-          text: value['updated_data']['text'].toString(),
-          description: value['updated_data']['description'].toString(),
-          isExpired: isExpired
+            id: value['updated_data']['id'].toString(),
+            userId: value['updated_data']['user_id'].toString(),
+            type: value['updated_data']['type'].toString(),
+            favourite: value['updated_data']['favourite'].toString(),
+            option1: value['updated_data']['option1'].toString(),
+            option2: value['updated_data']['option2'].toString(),
+            date: value['updated_data']['date'].toString(),
+            text: value['updated_data']['text'].toString(),
+            description: value['updated_data']['description'].toString(),
+            isExpired: isExpired
         );
-        if(trellisLadderDataModel.option2 == "Challenges") {
-
-          trellisLadderDataForGoalsChallenges.add(trellisLadderDataModel);
-        } else {
+        if(trellisLadderDataModel.type == "challenges") {
+          trellisLadderDataForChallenges.add(trellisLadderDataModel);
+          trellisLadderDataForChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
+        }else{
           trellisLadderDataForGoals.add(trellisLadderDataModel);
+          trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
         }
 
-        trellisLadderDataForGoals.sort((a,b)=>b.date!.compareTo(a.date!));
 
-        trellisLadderDataForGoalsChallenges.sort((a,b)=>b.date!.compareTo(a.date!));
+
+
         // _getTrellisReadData(false);
         setState(() {
           _isDataLoading = false;
@@ -1208,32 +1320,43 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
   }
 
   _setLadderMemoriesData() {
-    if(initialValueForGoals != "" && titleForGController.text.isNotEmpty && dateForGController.text.isNotEmpty) {
+    print('Setting Ladder Memories Data  =================> Ladder Type = $initialValueForLadderType');
+
+    if(initialValueForLadderType != "" && titleForGController.text.isNotEmpty) {
       setState(() {
         _isDataLoading = true;
       });
-      HTTPManager().trellisLadderForAchievements(TrellisLadderAchievementRequestModel(userId: id,type: "achievements",option1:initialValueForType ,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text,insertFrom: "ladder")).then((value) {
+      HTTPManager().trellisLadderForAchievements(TrellisLadderAchievementRequestModel(userId: id,type: initialValueForLadderType.toLowerCase(),option1:initialValueForType,option2: initialValueForLadderType,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text,insertFrom: "ladder")).then((value) {
 
         Navigator.of(context).pop();
         setState(() {
+          initialValueForLadderType = "Goals";
+          initialValueForType = "Physical";
+          initialValueForMType = "Memories";
+          initialValueForGType = "Goals";
           dateForGController.text = "";
           titleForGController.text = "";
           descriptionForGController.text = "";
         });
+        print('After Setting Ladder Memories Data  =================> Ladder Type = ${value['post_data']['type']}');
 
         TrellisLadderDataModel trellisLadderDataModel = TrellisLadderDataModel(
           id: value['post_data']['id'].toString(),
           userId: value['post_data']['user_id'].toString(),
           type: value['post_data']['type'].toString(),
-          favourite: value['post_data']['favourite'].toString(),
+          favourite: "no",
           option1: value['post_data']['option1'].toString(),
           option2: value['post_data']['option2'].toString(),
           date: value['post_data']['date'].toString(),
           text: value['post_data']['text'].toString(),
           description: value['post_data']['description'].toString(),
         );
-        trellisLadderDataForAchievements.add(trellisLadderDataModel);
-        trellisLadderDataForAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
+
+
+        trellisLadderDataForMemoriesAndAchievements.add(trellisLadderDataModel);
+        trellisLadderDataForMemoriesAndAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
+
+
         setState(() {
           _isDataLoading = false;
         });
@@ -1252,7 +1375,7 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
     }
   }
 
-  _updateLadderMemoriesData(String ladderMemoriesId, int index) {
+  _updateLadderMemoriesData(String updateType,String ladderMemoriesId, int index) {
     print("Ladder Memories ID");
     print(ladderMemoriesId);
     print(initialValueForType);
@@ -1260,13 +1383,31 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
     print(titleForGController.text);
     print(descriptionForGController.text);
 
-    if(initialValueForGoals != "" && titleForGController.text.isNotEmpty && dateForGController.text.isNotEmpty) {
+    if(initialValueForLadderType != "" && titleForGController.text.isNotEmpty) {
       setState(() {
         _isDataLoading = true;
       });
-      HTTPManager().trellisLadderForAchievementsUpdate(TrellisLadderAchievementUpdateRequestModel(ladderId: ladderMemoriesId,type: "achievements",option1:initialValueForType ,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text)).then((value) {
+      HTTPManager().trellisLadderForAchievementsUpdate(TrellisLadderAchievementUpdateRequestModel(ladderId: ladderMemoriesId,type: initialValueForLadderType.toLowerCase(),option1:initialValueForType ,option2: initialValueForLadderType,date: dateForGController.text,title: titleForGController.text,description: descriptionForGController.text)).then((value) {
 
         Navigator.of(context).pop();
+
+        if(updateType == "challenges") {
+          setState(() {
+            trellisLadderDataForChallenges.removeAt(index);
+          });
+        } else if(updateType == "goal") {
+          setState(() {
+            trellisLadderDataForGoals.removeAt(index);
+          });
+        }else{
+          setState(() {
+            trellisLadderDataForMemoriesAndAchievements.removeAt(index);
+          });
+        }
+
+
+
+
         setState(() {
           dateForGController.text = "";
           titleForGController.text = "";
@@ -1284,8 +1425,8 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
           text: value['updated_data']['text'].toString(),
           description: value['updated_data']['description'].toString(),
         );
-        trellisLadderDataForAchievements[index] = trellisLadderDataModel;
-        trellisLadderDataForAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
+        trellisLadderDataForMemoriesAndAchievements.add(trellisLadderDataModel);
+        trellisLadderDataForMemoriesAndAchievements.sort((a,b)=>b.date!.compareTo(a.date!));
         setState(() {
           _isDataLoading = false;
         });
@@ -1325,27 +1466,26 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
   }
 
   _deleteRecord(String type,String recordId,int index,String goalsOrChallenges) {
-    // print(type);
-    // print(index);
+    print('Request Data =============>');
+    print(id);
+    print(recordId);
+    print(type);
     setState(() {
       _isDataLoading = true;
     });
-    HTTPManager().trellisDelete(TrellisDeleteRequestModel(userId: id,recordId: recordId,type:type,)).then((value) {
+    HTTPManager().trellisDelete(TrellisDeleteRequestModel(userId: id,recordId: recordId,type:type)).then((value) {
 
-      if(type == "goal") {
-        if(goalsOrChallenges == "Challenges") {
-          setState(() {
-            trellisLadderDataForGoalsChallenges.removeAt(index);
-          });
-        }else {
-          setState(() {
-            trellisLadderDataForGoals.removeAt(index);
-          });
-        }
-
-      } else if(type == "achievements") {
+      if(type == "challenges") {
         setState(() {
-          trellisLadderDataForAchievements.removeAt(index);
+          trellisLadderDataForChallenges.removeAt(index);
+        });
+      } else if(type == "goal") {
+        setState(() {
+          trellisLadderDataForGoals.removeAt(index);
+        });
+      } else if(type == "achievements" || type == "memories" ) {
+        setState(() {
+          trellisLadderDataForMemoriesAndAchievements.removeAt(index);
         });
       }
       setState(() {
@@ -1366,6 +1506,9 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
 
 extension StringExtensions on String {
   String capitalize() {
+    if(isEmpty){
+      return this;
+    }
     return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

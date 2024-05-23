@@ -88,7 +88,7 @@ class _LogoScreenState extends State<LogoScreen> {
   Widget build(BuildContext context) {
     getScreenDetails();
 
-    return Column(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

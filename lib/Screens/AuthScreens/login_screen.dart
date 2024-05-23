@@ -6,6 +6,7 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_quiz_app/Screens/AuthScreens/forgot_password.dart';
 import 'package:flutter_quiz_app/Screens/Widgets/toast_message.dart';
 import 'package:flutter_quiz_app/Screens/dashboard_tiles.dart';
@@ -342,156 +343,167 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: IgnorePointer(
-              ignoring: false,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+                ignoring: false,
+                child:  Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     LogoScreen(""),
-
-                  Container(
-                    margin:const EdgeInsets.only(top: 10),
-                    padding: EdgeInsets.symmetric(vertical: 10,horizontal: !isPhone ? MediaQuery.of(context).size.width/3 : 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.hoverColor,
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                             Expanded(
-                               child: OptionMcqAnswer(InkWell(
-                                 onTap: (){
-                                   setState(() {
-                                     _isLogin = true;
-                                   });
-                                 },
-                                 child: Container(
-                                     decoration: BoxDecoration(
-                                         color: _isLogin ? AppColors.primaryColor : AppColors.hoverColor,
-                                         borderRadius: BorderRadius.circular(6)
-                                     ),
-                                   padding:const EdgeInsets.symmetric(vertical: 10),
-                                   alignment: Alignment.center,
-                                     child:const Text("Sign in",style: TextStyle(fontWeight: FontWeight.bold,color: AppColors.containerBorder,fontSize: AppConstants.defaultFontSize),)),
-                               )),
-                             ),
-                             const SizedBox(
-                                width: 5,
-                              ),
-                             Expanded(
-                               child: OptionMcqAnswer(InkWell(
-                                 onTap: (){
-                                   setState(() {
-                                     _isLogin = false;
-                                   });
-                                 },
-                                 child: Container(
-                                     decoration: BoxDecoration(
-                                         color: _isLogin ? AppColors.hoverColor : AppColors.primaryColor,
-                                         borderRadius: BorderRadius.circular(6)
-                                     ),
-
-                                     padding:const EdgeInsets.symmetric(vertical: 10),
-                                   alignment: Alignment.center,
-                                     child:const Text("Sign Up",style: TextStyle(fontWeight: FontWeight.bold,color: AppColors.containerBorder,fontSize: AppConstants.defaultFontSize),)),
-                               )),
-                             ),
-                            ],
-                          ),
-                        ),
-                        const Divider(color: AppColors.containerBorder,),
-
-                        // SignInButton(
-                        //   Buttons.google,
-                        //   text: "Sign in with Google",
-                        //   onPressed: () {
-                        //     _loginUserWithGoogle(context);
-                        //   },
-                        // ),
-                        // if (Platform.isIOS)
-                        // SignInButton(
-                        //   Buttons.apple,
-                        //   text: "Sign in with App",
-                        //   onPressed: () {
-                        //     _loginUserWithApple(context);
-                        //   },
-                        // ),
-
-                        Visibility(
-                          visible: !_isLogin,
-                          child: Container(
-                              margin:const EdgeInsets.only(top: 10),
-                              child: userName(_usernameController)),
-                        ),
-
-                        Container(
-                            margin:const EdgeInsets.only(top: 10),
-                            child: EmailField(_emailController,"Enter your email")),
-                        if(!isTimeZoneLoading)
-                        Visibility(
-                          visible: !_isLogin,
-                          child: Container(
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey),
-                              ),
-                              margin:const EdgeInsets.only(top: 10),
-                              child: DropdownButtonHideUnderline(
-                                child: DropDownTextField(
-                                  textStyle:const TextStyle(fontSize: AppConstants.defaultFontSize),
-                                  //listSpace: 20,
-                                  textFieldDecoration:const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "Select your timezone",
-                                    hintStyle: TextStyle(fontSize: AppConstants.defaultFontSize,color: AppColors.textColor),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                                  ),
-                                  // initialValue: _timezoneValue,
-                                  listPadding: ListPadding(top: 20),
-                                  enableSearch: true,
-                                  controller: _valueDropDownController,
-                                  validator: (value) => value!.isEmpty ? "Time zone Field is required" : null,
-                                  dropDownList: _availableTimezones.map<DropDownValueModel>((String value) {
-                                    return DropDownValueModel(
-                                        value: value,
-                                        name: value
-                                    );
-                                  }).toList(),
-                                  onChanged: (val) {
-                                    // ignore: avoid_print
-                                    print("Value Selected");
-                                    setState(() {
-                                      _timezone = _valueDropDownController.dropDownValue!.value.toString();
-                                      // ignore: avoid_print
-                                      print(_timezone);
-                                    });
-                                  },
+                    Container(
+                      margin:const EdgeInsets.only(top: 10),
+                      padding: EdgeInsets.symmetric(vertical: 10,horizontal: !isPhone ? MediaQuery.of(context).size.width/3 : 10),
+                      decoration: BoxDecoration(
+                          color: AppColors.hoverColor,
+                          borderRadius: BorderRadius.circular(5)
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: OptionMcqAnswer(InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        _isLogin = true;
+                                      });
+                                    },
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                            color: _isLogin ? AppColors.primaryColor : AppColors.hoverColor,
+                                            borderRadius: BorderRadius.circular(6)
+                                        ),
+                                        padding:const EdgeInsets.symmetric(vertical: 10),
+                                        alignment: Alignment.center,
+                                        child:const Text("Sign in",style: TextStyle(fontWeight: FontWeight.bold,color: AppColors.containerBorder,fontSize: AppConstants.defaultFontSize),)),
+                                  )),
                                 ),
-                              )
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Expanded(
+                                  child: OptionMcqAnswer(InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        _isLogin = false;
+                                      });
+                                    },
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                            color: _isLogin ? AppColors.hoverColor : AppColors.primaryColor,
+                                            borderRadius: BorderRadius.circular(6)
+                                        ),
 
-                          )
+                                        padding:const EdgeInsets.symmetric(vertical: 10),
+                                        alignment: Alignment.center,
+                                        child:const Text("Sign Up",style: TextStyle(fontWeight: FontWeight.bold,color: AppColors.containerBorder,fontSize: AppConstants.defaultFontSize),)),
+                                  )),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(color: AppColors.containerBorder,),
 
-                          // SearchableDropdownField(_valueDropDownController,
-                          //   _availableTimezones,
-                          //       (val) {
-                          //     print("Value Selected");
-                          //     setState(() {
-                          //       _timezone = _valueDropDownController.dropDownValue!.value.toString();
-                          //       print(_valueDropDownController.dropDownValue!.value.toString());
-                          //     });
-                          //   },),
-                        ),
+                          // SignInButton(
+                          //   Buttons.google,
+                          //   text: "Sign in with Google",
+                          //   onPressed: () {
+                          //     _loginUserWithGoogle(context);
+                          //   },
+                          // ),
+                          // if (Platform.isIOS)
+                          // SignInButton(
+                          //   Buttons.apple,
+                          //   text: "Sign in with App",
+                          //   onPressed: () {
+                          //     _loginUserWithApple(context);
+                          //   },
+                          // ),
 
-                        Container(
-                            margin:const EdgeInsets.only(top: 10,bottom: 10),
-                            child: passwordField(_passwordController,"Enter your password")),
+                          Visibility(
+                            visible: !_isLogin,
+                            child: Container(
+                                margin:const EdgeInsets.only(top: 10),
+                                child: userName(_usernameController)),
+                          ),
+
+                          Container(
+                              margin:const EdgeInsets.only(top: 10),
+                              child: EmailField(_emailController,"Enter your email")),
+
+                          Container(
+                              margin:const EdgeInsets.only(top: 10),
+                              child: passwordField(_passwordController,"Enter your password")),
+
+                          if(!isTimeZoneLoading)
+                            Visibility(
+                                visible: !_isLogin,
+                                child: Focus(
+                                  onKeyEvent: (node, event) {
+                                    if(event.logicalKey == LogicalKeyboardKey.tab){
+                                      FocusScope.of(context).nextFocus();
+                                      return KeyEventResult.handled;
+                                    }
+                                    return KeyEventResult.ignored;
+                                  },
+                                  child: Container(
+                                      alignment: Alignment.centerLeft,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.grey),
+                                      ),
+                                      margin:const EdgeInsets.only(top: 10),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropDownTextField(
+                                          textStyle:const TextStyle(fontSize: AppConstants.defaultFontSize),
+                                          //listSpace: 20,
+                                          textFieldDecoration:const InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: "Select your timezone",
+                                            hintStyle: TextStyle(fontSize: AppConstants.defaultFontSize,color: AppColors.textColor),
+                                            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                          ),
+                                          // initialValue: _timezoneValue,
+                                          listPadding: ListPadding(top: 20),
+                                          enableSearch: true,
+                                          controller: _valueDropDownController,
+                                          validator: (value) => value!.isEmpty ? "Time zone Field is required" : null,
+                                          dropDownList: _availableTimezones.map<DropDownValueModel>((String value) {
+                                            return DropDownValueModel(
+                                                value: value,
+                                                name: value
+                                            );
+                                          }).toList(),
+                                          onChanged: (val) {
+                                            // ignore: avoid_print
+                                            print("Value Selected");
+                                            setState(() {
+                                              _timezone = _valueDropDownController.dropDownValue!.value.toString();
+                                              // ignore: avoid_print
+                                              print(_timezone);
+                                            });
+                                          },
+                                        ),
+                                      )
+
+                                  ),
+                                )
+
+                              // SearchableDropdownField(_valueDropDownController,
+                              //   _availableTimezones,
+                              //       (val) {
+                              //     print("Value Selected");
+                              //     setState(() {
+                              //       _timezone = _valueDropDownController.dropDownValue!.value.toString();
+                              //       print(_valueDropDownController.dropDownValue!.value.toString());
+                              //     });
+                              //   },),
+                            ),
+
+
 
                           InkWell(
                             onTap: () {
@@ -502,37 +514,37 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             },
                             child: OptionMcqAnswer(
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              alignment: Alignment.center,
-                              margin:const EdgeInsets.only(top: 5,bottom: 5),
-                              child:
-                                 const Text("Submit",style: TextStyle(fontSize: AppConstants.defaultFontSize),)
+                              Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  alignment: Alignment.center,
+                                  margin:const EdgeInsets.only(top: 5,bottom: 5),
+                                  child:
+                                  const Text("Submit",style: TextStyle(fontSize: AppConstants.defaultFontSize),)
+                              ),
                             ),
-                        ),
                           ),
 
-                        InkWell(
-                          onTap: (){
-                            forgotPassword();
-                          },
-                          child:const Center(
-                            child: Text("Forgot Password?",style: TextStyle(color: Colors.blue,fontSize: AppConstants.defaultFontSize),),
+                          InkWell(
+                            onTap: (){
+                              forgotPassword();
+                            },
+                            child:const Center(
+                              child: Text("Forgot Password?",style: TextStyle(color: Colors.blue,fontSize: AppConstants.defaultFontSize),),
+                            ),
                           ),
-                        ),
 
-                        // Text("Email: ${responseAppleEmail.toString()}"),
-                        // Text("Name: ${responseAppleName.toString()}"),
-                        // Text("Identity Token: ${responseAppleIdentityToken.toString()}"),
+                          // Text("Email: ${responseAppleEmail.toString()}"),
+                          // Text("Name: ${responseAppleName.toString()}"),
+                          // Text("Identity Token: ${responseAppleIdentityToken.toString()}"),
 
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Align(alignment: Alignment.center,
-                    child: isLoading ? const CircularProgressIndicator(): Container(),
-                  )
-                ],
-              ),
+                    Align(alignment: Alignment.center,
+                      child: isLoading ? const CircularProgressIndicator(): Container(),
+                    )
+                  ],
+                )
             ),
           ),
         ),

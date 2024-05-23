@@ -1,6 +1,7 @@
 
 // ignore_for_file: avoid_print
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quiz_app/Screens/Widgets/toast_message.dart';
 import 'package:flutter_quiz_app/Widgets/constants.dart';
@@ -60,6 +61,7 @@ class _PostsState extends State<Posts> {
 
   final _formKey = GlobalKey<FormState>();
 
+  DateTime selectedReminderTime= DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day);
   late PostReminderResponseListModel postReminderResponseListModel;
   List <String> dateList = <String>[];
 
@@ -995,97 +997,113 @@ class _PostsState extends State<Posts> {
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-                          height: MediaQuery.of(context).size.height/10,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                height: MediaQuery.of(context).size.height/25,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: AppColors.primaryColor,
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                      child: ListWheelScrollView(
-                                        controller: _scrollControllerHour,
-                                        itemExtent: 25,
-                                        onSelectedItemChanged: (int index) {
-                                          // update the UI on selected item changes
-                                          setState(() {
-                                            _selectedItemIndexForHour = index;
-                                          });
-                                        },
-                                        diameterRatio: 1.4,
-                                        physics: const FixedExtentScrollPhysics(),
-                                        children: _itemsHour
-                                            .map((e) => Center(
-                                          child: Text(
-                                            _itemsHour.indexOf(e) == _selectedItemIndexForHour ?e + " hr" : e,
-                                            style:  TextStyle(
-                                                fontSize:_itemsHour.indexOf(e) == _selectedItemIndexForHour ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
-                                          ),
-                                        ))
-                                            .toList(),
-                                        // Other properties...
-                                      )
-                                  ),
-                                  Expanded(
-                                      child: ListWheelScrollView(
-                                        controller: _scrollControllerMin,
-                                        itemExtent: 25,
-                                        onSelectedItemChanged: (int index) {
-                                          // update the UI on selected item changes
-                                          setState(() {
-                                            _selectedItemIndexForMin = index;
-                                          });
-                                        },
-                                        diameterRatio: 1.4,
-                                        physics: const FixedExtentScrollPhysics(),
-                                        children: _itemsMin
-                                            .map((e) => Center(
-                                          child: Text(
-                                            _itemsMin.indexOf(e) == _selectedItemIndexForMin ?e + " min" : e,
-                                            style:  TextStyle(
-                                                fontSize:_itemsMin.indexOf(e) == _selectedItemIndexForMin ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
-                                          ),
-                                        ))
-                                            .toList(),
-                                        // Other properties...
-                                      )
-                                  ),
-                                  Expanded(
-                                      child: ListWheelScrollView(
-                                        controller: _scrollControllerAmPM,
-                                        itemExtent: 25,
-                                        onSelectedItemChanged: (int index) {
-                                          // update the UI on selected item changes
-                                          setState(() {
-                                            _selectedItemIndexForAmPm = index;
-                                          });
-                                        },
-                                        diameterRatio: 1.4,
-                                        physics: const FixedExtentScrollPhysics(),
-                                        children: _itemsAmPm
-                                            .map((e) => Center(
-                                          child: Text(
-                                            e,
-                                            style:  TextStyle(
-                                                fontSize:_itemsAmPm.indexOf(e) == _selectedItemIndexForAmPm ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
-                                          ),
-                                        ))
-                                            .toList(),
-                                        // Other properties...
-                                      )
-                                  ),
-                                ],
-                              ),
-                            ],
+                          height: MediaQuery.of(context).size.height/3,
+                          child: CupertinoDatePicker(
+                            initialDateTime: selectedReminderTime,
+                            minuteInterval: 15,
+                            mode: CupertinoDatePickerMode.time,
+                            onDateTimeChanged: (value) {
+                              print('DateTime =========> $value');
+
+                              print('Hour ===========> ${DateFormat('hh:mm').format(value)}');
+                              print('Minutes ================>${DateFormat('a').format(value)}');
+                              setState((){
+                                selectedReminderTime = value;
+                              });
+
+
+                            },
                           ),
+                          // child: Stack(
+                          //   alignment: Alignment.center,
+                          //   children: [
+                          //     Container(
+                          //       height: MediaQuery.of(context).size.height/25,
+                          //       decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(20),
+                          //         color: AppColors.primaryColor,
+                          //       ),
+                          //     ),
+                          //     Row(
+                          //       mainAxisAlignment: MainAxisAlignment.center,
+                          //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //       children: [
+                          //         Expanded(
+                          //             child: ListWheelScrollView(
+                          //               controller: _scrollControllerHour,
+                          //               itemExtent: 25,
+                          //               onSelectedItemChanged: (int index) {
+                          //                 // update the UI on selected item changes
+                          //                 setState(() {
+                          //                   _selectedItemIndexForHour = index;
+                          //                 });
+                          //               },
+                          //               diameterRatio: 1.4,
+                          //               physics: const FixedExtentScrollPhysics(),
+                          //               children: _itemsHour
+                          //                   .map((e) => Center(
+                          //                 child: Text(
+                          //                   _itemsHour.indexOf(e) == _selectedItemIndexForHour ?e + " hr" : e,
+                          //                   style:  TextStyle(
+                          //                       fontSize:_itemsHour.indexOf(e) == _selectedItemIndexForHour ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
+                          //                 ),
+                          //               ))
+                          //                   .toList(),
+                          //               // Other properties...
+                          //             )
+                          //         ),
+                          //         Expanded(
+                          //             child: ListWheelScrollView(
+                          //               controller: _scrollControllerMin,
+                          //               itemExtent: 25,
+                          //               onSelectedItemChanged: (int index) {
+                          //                 // update the UI on selected item changes
+                          //                 setState(() {
+                          //                   _selectedItemIndexForMin = index;
+                          //                 });
+                          //               },
+                          //               diameterRatio: 1.4,
+                          //               physics: const FixedExtentScrollPhysics(),
+                          //               children: _itemsMin
+                          //                   .map((e) => Center(
+                          //                 child: Text(
+                          //                   _itemsMin.indexOf(e) == _selectedItemIndexForMin ?e + " min" : e,
+                          //                   style:  TextStyle(
+                          //                       fontSize:_itemsMin.indexOf(e) == _selectedItemIndexForMin ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
+                          //                 ),
+                          //               ))
+                          //                   .toList(),
+                          //               // Other properties...
+                          //             )
+                          //         ),
+                          //         Expanded(
+                          //             child: ListWheelScrollView(
+                          //               controller: _scrollControllerAmPM,
+                          //               itemExtent: 25,
+                          //               onSelectedItemChanged: (int index) {
+                          //                 // update the UI on selected item changes
+                          //                 setState(() {
+                          //                   _selectedItemIndexForAmPm = index;
+                          //                 });
+                          //               },
+                          //               diameterRatio: 1.4,
+                          //               physics: const FixedExtentScrollPhysics(),
+                          //               children: _itemsAmPm
+                          //                   .map((e) => Center(
+                          //                 child: Text(
+                          //                   e,
+                          //                   style:  TextStyle(
+                          //                       fontSize:_itemsAmPm.indexOf(e) == _selectedItemIndexForAmPm ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
+                          //                 ),
+                          //               ))
+                          //                   .toList(),
+                          //               // Other properties...
+                          //             )
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ],
+                          // ),
                         ),
                         Container(
                           padding:const EdgeInsets.symmetric(horizontal: 5),
@@ -1263,13 +1281,15 @@ class _PostsState extends State<Posts> {
                           margin:const EdgeInsets.symmetric(vertical: 5),
                           child: ElevatedButton(
                               onPressed: (){
+                                print('Hour ===========> ${DateFormat('hh:mm').format(selectedReminderTime)}');
+                                print('Minutes ================>${DateFormat('a').format(selectedReminderTime)}');
                                 dateList.clear();
                                   String reminderTitle = _titleController.text;
                                   String date1 = _dateController.text;
                                   String endDate1 = _endDateController.text;
-                                  String time1 = "${_itemsHour[_selectedItemIndexForHour]}:${_itemsMin[_selectedItemIndexForMin]}";
-
-                                  String reminderTypeTime = _itemsAmPm[_selectedItemIndexForAmPm].toString();
+                                  String time1 = DateFormat('hh:mm').format(selectedReminderTime);
+                                  String reminderTypeTime = DateFormat('a').format(selectedReminderTime);
+                                  selectedReminderTime = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day);
                                   for(int i = 0; i<_selectedWeekdays.length; i++) {
                                     dateList.add(_selectedWeekdays[i]["name"]);
                                   }
