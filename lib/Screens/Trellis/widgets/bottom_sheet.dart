@@ -1352,7 +1352,7 @@ void sendConnectionBottomSheet(BuildContext context,Function(UsersSearchData val
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Request For:',style: TextStyle(color: AppColors.primaryColor,fontSize: AppConstants.columnDetailsScreenFontSize,fontWeight: FontWeight.bold),),
+                      const Text('Request for someone to be your:',style: TextStyle(color: AppColors.primaryColor,fontSize: AppConstants.columnDetailsScreenFontSize,fontWeight: FontWeight.bold),),
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         child: OptionMcqAnswer(

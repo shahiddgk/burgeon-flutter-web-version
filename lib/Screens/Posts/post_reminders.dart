@@ -56,6 +56,7 @@ class _PostsState extends State<Posts> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _reminderTimeController = TextEditingController();
   final categoryController = TextEditingController();
   late bool isPhone;
 
@@ -996,115 +997,173 @@ class _PostsState extends State<Posts> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-                          height: MediaQuery.of(context).size.height/3,
-                          child: CupertinoDatePicker(
-                            initialDateTime: selectedReminderTime,
-                            minuteInterval: 15,
-                            mode: CupertinoDatePickerMode.time,
-                            onDateTimeChanged: (value) {
-                              print('DateTime =========> $value');
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color:AppColors.primaryColor ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextFormField(
+                            controller: _reminderTimeController,
+                            onTap: () async {
+                              final pickedTime = await showTimePicker(
+                                helpText: 'Select Reminder Time',
+                                context: context,
+                                initialEntryMode: TimePickerEntryMode.inputOnly,
+                                initialTime: TimeOfDay(hour: selectedReminderTime.hour, minute: selectedReminderTime.minute),
+                              );
 
-                              print('Hour ===========> ${DateFormat('hh:mm').format(value)}');
-                              print('Minutes ================>${DateFormat('a').format(value)}');
-                              setState((){
-                                selectedReminderTime = value;
-                              });
+                              if(pickedTime != null){
+                                print('Picked Time ===============> ${pickedTime.hour}:${pickedTime.minute}');
+                                setState((){
+                                  selectedReminderTime = DateTime(selectedReminderTime.year,selectedReminderTime.month, selectedReminderTime.day,pickedTime?.hour ?? selectedReminderTime.hour,pickedTime?.minute ?? selectedReminderTime.hour);
+                                  _reminderTimeController.text = DateFormat('hh:mm a').format(selectedReminderTime);
+                                });
+
+                              }
 
 
                             },
+                            decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Select Reminder Time",
+                                // isDense: true,
+                                prefixIcon: Icon(Icons.calendar_month,color: AppColors.primaryColor,),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10,vertical: 10)
+                            ),
+                            validator: (value) => value!.isEmpty ? "Reminder Time Required" : null,
+                            readOnly: true,
+                            style: const TextStyle(
+                              // fontWeight: FontWeight.bold,
+                              fontSize: AppConstants.defaultFontSize,
+                            ),
+                            textAlignVertical: TextAlignVertical.center,
+                            textAlign: TextAlign.start,
                           ),
-                          // child: Stack(
-                          //   alignment: Alignment.center,
-                          //   children: [
-                          //     Container(
-                          //       height: MediaQuery.of(context).size.height/25,
-                          //       decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(20),
-                          //         color: AppColors.primaryColor,
-                          //       ),
-                          //     ),
-                          //     Row(
-                          //       mainAxisAlignment: MainAxisAlignment.center,
-                          //       crossAxisAlignment: CrossAxisAlignment.center,
-                          //       children: [
-                          //         Expanded(
-                          //             child: ListWheelScrollView(
-                          //               controller: _scrollControllerHour,
-                          //               itemExtent: 25,
-                          //               onSelectedItemChanged: (int index) {
-                          //                 // update the UI on selected item changes
-                          //                 setState(() {
-                          //                   _selectedItemIndexForHour = index;
-                          //                 });
-                          //               },
-                          //               diameterRatio: 1.4,
-                          //               physics: const FixedExtentScrollPhysics(),
-                          //               children: _itemsHour
-                          //                   .map((e) => Center(
-                          //                 child: Text(
-                          //                   _itemsHour.indexOf(e) == _selectedItemIndexForHour ?e + " hr" : e,
-                          //                   style:  TextStyle(
-                          //                       fontSize:_itemsHour.indexOf(e) == _selectedItemIndexForHour ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
-                          //                 ),
-                          //               ))
-                          //                   .toList(),
-                          //               // Other properties...
-                          //             )
-                          //         ),
-                          //         Expanded(
-                          //             child: ListWheelScrollView(
-                          //               controller: _scrollControllerMin,
-                          //               itemExtent: 25,
-                          //               onSelectedItemChanged: (int index) {
-                          //                 // update the UI on selected item changes
-                          //                 setState(() {
-                          //                   _selectedItemIndexForMin = index;
-                          //                 });
-                          //               },
-                          //               diameterRatio: 1.4,
-                          //               physics: const FixedExtentScrollPhysics(),
-                          //               children: _itemsMin
-                          //                   .map((e) => Center(
-                          //                 child: Text(
-                          //                   _itemsMin.indexOf(e) == _selectedItemIndexForMin ?e + " min" : e,
-                          //                   style:  TextStyle(
-                          //                       fontSize:_itemsMin.indexOf(e) == _selectedItemIndexForMin ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
-                          //                 ),
-                          //               ))
-                          //                   .toList(),
-                          //               // Other properties...
-                          //             )
-                          //         ),
-                          //         Expanded(
-                          //             child: ListWheelScrollView(
-                          //               controller: _scrollControllerAmPM,
-                          //               itemExtent: 25,
-                          //               onSelectedItemChanged: (int index) {
-                          //                 // update the UI on selected item changes
-                          //                 setState(() {
-                          //                   _selectedItemIndexForAmPm = index;
-                          //                 });
-                          //               },
-                          //               diameterRatio: 1.4,
-                          //               physics: const FixedExtentScrollPhysics(),
-                          //               children: _itemsAmPm
-                          //                   .map((e) => Center(
-                          //                 child: Text(
-                          //                   e,
-                          //                   style:  TextStyle(
-                          //                       fontSize:_itemsAmPm.indexOf(e) == _selectedItemIndexForAmPm ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
-                          //                 ),
-                          //               ))
-                          //                   .toList(),
-                          //               // Other properties...
-                          //             )
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ],
-                          // ),
                         ),
+                        // InkWell(
+                        //   onTap: () async {
+                        //
+                        //    final pickedTime = await showTimePicker(
+                        //         context: context,
+                        //         initialEntryMode: TimePickerEntryMode.inputOnly,
+                        //         initialTime: TimeOfDay(hour: selectedReminderTime.hour, minute: selectedReminderTime.minute),
+                        //     );
+                        //
+                        //    setState((){
+                        //      selectedReminderTime = DateTime(selectedReminderTime.year,selectedReminderTime.month, selectedReminderTime.day,pickedTime?.hour ?? selectedReminderTime.hour,pickedTime?.minute ?? selectedReminderTime.hour);
+                        //    });
+                        //   },
+                        //   child: ,
+                          // child: Container(
+                          //   padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                          //   height: MediaQuery.of(context).size.height/3,
+                          //   child: CupertinoDatePicker(
+                          //     initialDateTime: selectedReminderTime,
+                          //     minuteInterval: 15,
+                          //     mode: CupertinoDatePickerMode.time,
+                          //     onDateTimeChanged: (value) {
+                          //       print('DateTime =========> $value');
+                          //
+                          //       print('Hour ===========> ${DateFormat('hh:mm').format(value)}');
+                          //       print('Minutes ================>${DateFormat('a').format(value)}');
+                          //       setState((){
+                          //         selectedReminderTime = value;
+                          //       });
+                          //     },
+                          //   ),
+                          //   // child: Stack(
+                          //   //   alignment: Alignment.center,
+                          //   //   children: [
+                          //   //     Container(
+                          //   //       height: MediaQuery.of(context).size.height/25,
+                          //   //       decoration: BoxDecoration(
+                          //   //         borderRadius: BorderRadius.circular(20),
+                          //   //         color: AppColors.primaryColor,
+                          //   //       ),
+                          //   //     ),
+                          //   //     Row(
+                          //   //       mainAxisAlignment: MainAxisAlignment.center,
+                          //   //       crossAxisAlignment: CrossAxisAlignment.center,
+                          //   //       children: [
+                          //   //         Expanded(
+                          //   //             child: ListWheelScrollView(
+                          //   //               controller: _scrollControllerHour,
+                          //   //               itemExtent: 25,
+                          //   //               onSelectedItemChanged: (int index) {
+                          //   //                 // update the UI on selected item changes
+                          //   //                 setState(() {
+                          //   //                   _selectedItemIndexForHour = index;
+                          //   //                 });
+                          //   //               },
+                          //   //               diameterRatio: 1.4,
+                          //   //               physics: const FixedExtentScrollPhysics(),
+                          //   //               children: _itemsHour
+                          //   //                   .map((e) => Center(
+                          //   //                 child: Text(
+                          //   //                   _itemsHour.indexOf(e) == _selectedItemIndexForHour ?e + " hr" : e,
+                          //   //                   style:  TextStyle(
+                          //   //                       fontSize:_itemsHour.indexOf(e) == _selectedItemIndexForHour ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
+                          //   //                 ),
+                          //   //               ))
+                          //   //                   .toList(),
+                          //   //               // Other properties...
+                          //   //             )
+                          //   //         ),
+                          //   //         Expanded(
+                          //   //             child: ListWheelScrollView(
+                          //   //               controller: _scrollControllerMin,
+                          //   //               itemExtent: 25,
+                          //   //               onSelectedItemChanged: (int index) {
+                          //   //                 // update the UI on selected item changes
+                          //   //                 setState(() {
+                          //   //                   _selectedItemIndexForMin = index;
+                          //   //                 });
+                          //   //               },
+                          //   //               diameterRatio: 1.4,
+                          //   //               physics: const FixedExtentScrollPhysics(),
+                          //   //               children: _itemsMin
+                          //   //                   .map((e) => Center(
+                          //   //                 child: Text(
+                          //   //                   _itemsMin.indexOf(e) == _selectedItemIndexForMin ?e + " min" : e,
+                          //   //                   style:  TextStyle(
+                          //   //                       fontSize:_itemsMin.indexOf(e) == _selectedItemIndexForMin ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
+                          //   //                 ),
+                          //   //               ))
+                          //   //                   .toList(),
+                          //   //               // Other properties...
+                          //   //             )
+                          //   //         ),
+                          //   //         Expanded(
+                          //   //             child: ListWheelScrollView(
+                          //   //               controller: _scrollControllerAmPM,
+                          //   //               itemExtent: 25,
+                          //   //               onSelectedItemChanged: (int index) {
+                          //   //                 // update the UI on selected item changes
+                          //   //                 setState(() {
+                          //   //                   _selectedItemIndexForAmPm = index;
+                          //   //                 });
+                          //   //               },
+                          //   //               diameterRatio: 1.4,
+                          //   //               physics: const FixedExtentScrollPhysics(),
+                          //   //               children: _itemsAmPm
+                          //   //                   .map((e) => Center(
+                          //   //                 child: Text(
+                          //   //                   e,
+                          //   //                   style:  TextStyle(
+                          //   //                       fontSize:_itemsAmPm.indexOf(e) == _selectedItemIndexForAmPm ? AppConstants.fontSizeForReminderSectionTimePicker : AppConstants.defaultFontSize),
+                          //   //                 ),
+                          //   //               ))
+                          //   //                   .toList(),
+                          //   //               // Other properties...
+                          //   //             )
+                          //   //         ),
+                          //   //       ],
+                          //   //     ),
+                          //   //   ],
+                          //   // ),
+                          // ),
+                        // ),
                         Container(
                           padding:const EdgeInsets.symmetric(horizontal: 5),
                           child: Row(
