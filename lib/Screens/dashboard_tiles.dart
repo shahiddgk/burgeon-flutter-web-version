@@ -604,10 +604,10 @@ class _DashboardState extends State<Dashboard> {
                                         // }
                                       },
                                         child: OptionMcqAnswer(
-                                            const Card(
+                                            Card(
                                               color: AppColors.primaryColor,
                                               child:Center(
-                                                child: Text("Tribe",style: TextStyle(fontSize: AppConstants.headingFontSize),),
+                                                child: Text("Tribe",textAlign: TextAlign.center,style: TextStyle(fontSize:isPhone ? AppConstants.mobileHeadingFontSize : isTable ? AppConstants.tabletHeadingFontSize : AppConstants.headingFontSize),),
                                               ),
                                             )
                                         ),),
