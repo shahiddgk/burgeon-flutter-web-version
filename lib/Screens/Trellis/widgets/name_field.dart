@@ -46,7 +46,7 @@ class _NameFieldState extends State<NameField> {
             controller: widget._NameFieldController,
             maxLines: widget.maxLength,
             readOnly: widget.otherUserLoggedIn,
-            // maxLength:widget.maxLength != 1 ? widget.maxFieldLength != 0 ? widget.maxFieldLength : null: null,
+            maxLength:widget.maxLength != 1 ? widget.maxFieldLength != 0 ? widget.maxFieldLength : null: null,
             validator: (value) => value!.isEmpty ? "${widget.fieldName} is required" : null,
             decoration: InputDecoration(
                 hoverColor: widget.bottomSheet ? AppColors.lightGreyColor: null,

@@ -568,7 +568,17 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                 InkWell(
                                                   onTap: () {
                                                     print(isFavourite);
-                                                    _setLadderFavouriteItem(index,trellisLadderDataForGoals[index].id.toString(),trellisLadderDataForGoals[index].favourite.toString(),true);
+                                                    if(trellisLadderDataForGoals[index].favourite != 'no'){
+                                                      _setLadderFavouriteItem(index,trellisLadderDataForGoals[index].id.toString(),trellisLadderDataForGoals[index].favourite.toString(),true);
+                                                    }else {
+                                                      final items = trellisLadderDataForGoals.where((e) => e.favourite != 'no');
+                                                      if (items.length < 2) {
+                                                        _setLadderFavouriteItem(index, trellisLadderDataForGoals[index].id.toString(), trellisLadderDataForGoals[index].favourite.toString(),true);
+                                                      }else{
+                                                        showToastMessage(context, "You cannot add more than two goals as favorites", false);
+                                                      }
+                                                    }
+
                                                   },
                                                   child: trellisLadderDataForGoals[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
                                                 ),
@@ -717,7 +727,18 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                 GestureDetector(
                                                   onTap: () {
                                                     print(isFavourite);
-                                                    _setLadderFavouriteItem(index,trellisLadderDataForChallenges[index].id.toString(),trellisLadderDataForChallenges[index].favourite.toString(),true);
+                                                    if(trellisLadderDataForChallenges[index].favourite != 'no'){
+                                                      _setLadderFavouriteItem(index,trellisLadderDataForChallenges[index].id.toString(),trellisLadderDataForChallenges[index].favourite.toString(),true);
+                                                    }else{
+                                                      final items = trellisLadderDataForChallenges.where((e) => e.favourite != 'no');
+                                                      if(items.length < 2){
+                                                        _setLadderFavouriteItem(index,trellisLadderDataForChallenges[index].id.toString(),trellisLadderDataForChallenges[index].favourite.toString(),true);
+                                                      }else{
+                                                        showToastMessage(context, "You cannot add more than two challenges as favorites", false);
+                                                      }
+                                                    }
+
+
                                                   },
                                                   child: trellisLadderDataForChallenges[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
                                                 ),
@@ -858,7 +879,17 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                 GestureDetector(
                                                   onTap: () {
                                                     print(isFavourite);
-                                                    _setLadderFavouriteItem(index,trellisLadderDataForMemoriesAndAchievements[index].id.toString(),trellisLadderDataForMemoriesAndAchievements[index].favourite.toString(),false);
+                                                    if(trellisLadderDataForMemoriesAndAchievements[index].favourite != 'no'){
+                                                      _setLadderFavouriteItem(index,trellisLadderDataForMemoriesAndAchievements[index].id.toString(),trellisLadderDataForMemoriesAndAchievements[index].favourite.toString(),false);
+                                                    }else{
+                                                      final items = trellisLadderDataForMemoriesAndAchievements.where((e) => e.favourite != 'no' );
+                                                      if(items.length < 2){
+                                                        _setLadderFavouriteItem(index,trellisLadderDataForMemoriesAndAchievements[index].id.toString(),trellisLadderDataForMemoriesAndAchievements[index].favourite.toString(),false);
+                                                      }else{
+                                                        showToastMessage(context, "You cannot add more than two memories or achievements as favorites", false);
+                                                      }
+                                                    }
+
                                                   },
                                                   child: trellisLadderDataForMemoriesAndAchievements[index].favourite != 'no' ? Image.asset( "assets/like_full.png") : Image.asset( "assets/like_empty.png"),
                                                 ),
@@ -938,7 +969,8 @@ class _LadderTileSectionState extends State<LadderTileSection> with SingleTicker
                                                     );
 
                                                     // showDeletePopup( "goal",trellisLadderDataForGoals[index].id.toString(),index,trellisLadderDataForGoals[index].option2!);
-                                                  }, icon: const Icon(Icons.edit,color: AppColors.primaryColor,),),
+                                                  },
+                                                  icon: const Icon(Icons.edit,color: AppColors.primaryColor,),),
                                                 IconButton(
                                                     onPressed: () async {
                                                       showThumbsUpDialogue(context, _animationController, id, 'ladder', trellisLadderDataForMemoriesAndAchievements[index].id.toString(), selectedUserAcceptedConnectionsListResponse, searchAcceptedConnectionsListResponse, acceptedConnectionsListResponse);

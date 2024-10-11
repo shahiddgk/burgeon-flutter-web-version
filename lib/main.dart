@@ -37,7 +37,8 @@ void _configureFirebase() async {
           storageBucket: "triggerhappy-a7406.appspot.com",
           messagingSenderId: "201811649952",
           appId: "1:201811649952:web:5407a6fb6e5234598c70c5",
-          measurementId: "G-P7SF41DNCY")
+          measurementId: "G-P7SF41DNCY"
+      )
   );
 
 }

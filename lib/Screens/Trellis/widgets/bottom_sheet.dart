@@ -449,6 +449,162 @@ class _LadderBottomSheetState extends State<LadderBottomSheet> {
   }
 }
 
+void visionBottomSheet(
+    BuildContext context,
+    String heading,
+    TextEditingController visionController,
+    TextEditingController relationalVisionController,
+    TextEditingController emotionalVisionController,
+    TextEditingController physicalVisionController,
+    TextEditingController workVisionController,
+    TextEditingController financialVisionController,
+    TextEditingController spiritualVisionController,
+    Function() onTap,
+
+    ){
+  showModalBottomSheet(
+      enableDrag: false,
+      isDismissible: true,
+      isScrollControlled: true,
+      shape:const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(topRight: Radius.circular(20.0),topLeft: Radius.circular(20.0))
+      ) ,
+      context: context,
+      builder: (builder){
+
+        return StatefulBuilder(
+            builder: (BuildContext context,StateSetter setState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: SingleChildScrollView(
+                  child: SafeArea(
+                    child: Container(
+                        color: AppColors.backgroundColor,
+                        padding:const EdgeInsets.only(top: 10,left: 10,right: 10,bottom: 40),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  heading,
+                                  style:const TextStyle(
+                                    fontSize: AppConstants.headingFontSize,
+                                    fontWeight: FontWeight.bold,
+
+                                  ),
+                                ),
+                                IconButton(onPressed: (){
+                                  Navigator.of(context).pop();
+                                },
+                                    icon:const Icon(Icons.cancel)
+                                )
+                              ],
+                            ),
+
+                            Container(
+                                margin:const EdgeInsets.only(top: 5,left: 5,right: 5,bottom: 5),
+                                child: NameField(visionController,"your one sentence headstone",1,140,true,false)),
+
+                            const Text(
+                              "Obituary (1-2 sentences per section)",
+                              style:const TextStyle(
+                                fontSize: AppConstants.defaultFontSize,
+                                fontWeight: FontWeight.bold,
+
+                              ),
+                            ),
+
+                            Container(
+                              margin:const EdgeInsets.only(top: 5,left: 10,right: 5),
+                              child: const Text(
+                                "Physical Vision",style: TextStyle(
+                                  fontSize: AppConstants.defaultFontSize,
+                                  color: AppColors.primaryColor),
+                              ),
+                            ),
+                            Container(
+                                margin:const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                child: NameField(physicalVisionController,"Physical Vision",1,300,true,false)),
+                            Container(
+                              margin:const EdgeInsets.only(top: 5,left: 10,right: 5),
+                              child: const Text(
+                                "Relational Vision",style: TextStyle(
+                                  fontSize: AppConstants.defaultFontSize,
+                                  color: AppColors.primaryColor),
+                              ),
+                            ),
+                            Container(
+                                margin:const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                child: NameField(relationalVisionController,"Relational Vision",1,300,true,false)),
+                            Container(
+                              margin:const EdgeInsets.only(top: 5,left: 10,right: 5),
+                              child: const Text(
+                                "Emotional Vision",style: TextStyle(
+                                  fontSize: AppConstants.defaultFontSize,
+                                  color: AppColors.primaryColor),
+                              ),
+                            ),
+                            Container(
+                                margin:const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                child: NameField(emotionalVisionController,"Emotional Vision",1,300,true,false)),
+
+                            Container(
+                              margin:const EdgeInsets.only(top: 5,left: 10,right: 5),
+                              child: const Text(
+                                "Work Vision",style: TextStyle(
+                                  fontSize: AppConstants.defaultFontSize,
+                                  color: AppColors.primaryColor),
+                              ),
+                            ),
+                            Container(
+                                margin:const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                child: NameField(workVisionController,"Work Vision",1,300,true,false)),
+                            Container(
+                              margin:const EdgeInsets.only(top: 5,left: 10,right: 5),
+                              child: const Text(
+                                "Financial Vision",style: TextStyle(
+                                  fontSize: AppConstants.defaultFontSize,
+                                  color: AppColors.primaryColor),
+                              ),
+                            ),
+                            Container(
+                                margin:const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                child: NameField(financialVisionController,"Financial Vision",1,300,true,false)),
+                            Container(
+                              margin:const EdgeInsets.only(top: 5,left: 10,right: 5),
+                              child: const Text(
+                                "Spiritual Vision",style: TextStyle(
+                                  fontSize: AppConstants.defaultFontSize,
+                                  color: AppColors.primaryColor),
+                              ),
+                            ),
+                            Container(
+                                margin:const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                child: NameField(spiritualVisionController,"Spiritual Vision",1,300,true,false)),
+
+
+                            SaveButtonWidgets( (){
+                              onTap();
+                            }),
+
+                          ],
+                        )
+                    ),
+                  ),
+                ),
+              );
+            }
+        );
+
+      }
+  );
+}
+
 
 void ladderBottomSheet(
     bool isEdit,
@@ -570,17 +726,12 @@ void ladderBottomSheet(
                                     typeValue(value);
                                   }),
                                 ),
-
-
-
-
                                 Visibility(
                                     visible: isChallenges,
                                     child: DatePickerField(dateForGController,"Select date",isGoals)),
-
                                 Container(
                                     margin:const EdgeInsets.only(top: 5,left: 5,right: 5,bottom: 5),
-                                    child: NameField(titleForGController,"title",1,70,true,false)),
+                                    child: NameField(titleForGController,"title",1,40,true,false)),
                                 Container(
                                     margin:const EdgeInsets.only(top: 5,left: 5,right: 5,bottom: 5),
                                     child: NameField(descriptionForGController,"description",4,0,true,false)),

@@ -494,9 +494,19 @@ class _CardFormScreenState extends State<CardFormScreen> {
         isLoading = true;
       });
 
+      String planType = 'unknown';
+
+      if(userPremiumType  == 'year'){
+        planType = 'yearly';
+      }else if(userPremiumType == 'month'){
+        planType = 'monthly';
+      }else if(userPremiumType == 'day'){
+        planType = 'daily';
+      }
+
       HTTPManager()
           .cancelSubscription(
-              StripeCancelRequestModel(subscriptionId: userSubscriptionId))
+              StripeCancelRequestModel(subscriptionId: userSubscriptionId,planType:planType, cancelReason: ""))
           .then((value) {
         // UserStatePrefrence().setAnswerText(
         //   true,
@@ -511,7 +521,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
         //   "",
         //   "",
         // );
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const Dashboard()), (route) => false);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const Dashboard()), (route) => false);
         setState(() {
           isLoading = false;
         });
@@ -555,6 +565,7 @@ class _CardFormScreenState extends State<CardFormScreen> {
 
   _sendPaymentForCoaches(String userId1,String token1,String type1,String recieverId1,String entityId1) {
 
+    print('Starting Payment For Coaches =============>');
     HTTPManager().sendSagePaymentForCoach(SageCoachesPayment(userId: userId1, token: token1, type: type1,recieverId: recieverId1, entityId: entityId1)).then((value) {
 
       setState(() {
@@ -635,11 +646,12 @@ class _CardFormScreenState extends State<CardFormScreen> {
         value['data']['stripe_customer_id'].toString(),
         value['data']['stripe_subscription_id'].toString(),
       );
-      if (widget.isUpgrade) {
-        _cancelSubscription();
-      } else {
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const Dashboard()), (route) => false);
-      }
+      // if (widget.isUpgrade) {
+      //   _cancelSubscription();
+      // } else {
+      //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const Dashboard()), (route) => false);
+      // }
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const Dashboard()), (route) => false);
       showToastMessage(context, "Subscription successful", true);
     }).catchError((e) {
       setState(() {

@@ -1,12 +1,13 @@
 
 // ignore_for_file: avoid_print
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quiz_app/Screens/PireScreens/widgets/AppBar.dart';
 import 'package:flutter_quiz_app/Screens/Widgets/toast_message.dart';
 import 'package:flutter_quiz_app/Widgets/constants.dart';
 import 'package:flutter_quiz_app/model/request_model/logout_user_request.dart';
 import 'package:flutter_quiz_app/model/request_model/post_request_model.dart';
+import 'package:interval_time_picker/interval_time_picker.dart' as TimePicker;
 import 'package:shared_preferences/shared_preferences.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
@@ -15,11 +16,6 @@ import '../../Widgets/logo_widget_for_all_screens.dart';
 import '../../Widgets/option_mcq_widget.dart';
 import '../../model/reponse_model/post_reminder_list_response_model.dart';
 import '../../network/http_manager.dart';
-import '../Payment/payment_screen.dart';
-import '../PireScreens/widgets/AppBar.dart';
-import '../PireScreens/widgets/PopMenuButton.dart';
-import '../UserActivity/user_activity.dart';
-import '../dashboard_tiles.dart';
 import '../utill/userConstants.dart';
 
 class Posts extends StatefulWidget {
@@ -1006,11 +1002,21 @@ class _PostsState extends State<Posts> {
                           child: TextFormField(
                             controller: _reminderTimeController,
                             onTap: () async {
-                              final pickedTime = await showTimePicker(
-                                helpText: 'Select Reminder Time',
-                                context: context,
-                                initialEntryMode: TimePickerEntryMode.inputOnly,
-                                initialTime: TimeOfDay(hour: selectedReminderTime.hour, minute: selectedReminderTime.minute),
+                              // final pickedTime = await showTimePicker(
+                              //   helpText: 'Select Reminder Time',
+                              //   context: context,
+                              //   initialEntryMode: TimePickerEntryMode.inputOnly,
+                              //   initialTime: TimeOfDay(hour: selectedReminderTime.hour, minute: selectedReminderTime.minute),
+                              // );
+
+                              final pickedTime = await TimePicker.showIntervalTimePicker(
+                                  context: context,
+                                  helpText: 'Select Remainder Time',
+                                  interval: 15,
+                                  visibleStep: TimePicker.VisibleStep.Fifteenths,
+                                  errorInvalidText: 'Enter a valid time(15 minutes interval)',
+                                  initialEntryMode: TimePicker.TimePickerEntryMode.dial,
+                                  initialTime: TimeOfDay(hour: selectedReminderTime.hour, minute: selectedReminderTime.minute)
                               );
 
                               if(pickedTime != null){

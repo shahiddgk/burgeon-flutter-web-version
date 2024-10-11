@@ -2,19 +2,25 @@
 
 // ignore_for_file: avoid_print, duplicate_ignore
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_quiz_app/model/request_model/organizing_principles_add_favourite_request.dart';
 import 'package:flutter_quiz_app/model/reponse_model/garden_response_model.dart';
+import 'package:flutter_quiz_app/model/reponse_model/leaving_reason_response_model.dart';
 import 'package:flutter_quiz_app/model/reponse_model/naq_response_model.dart';
 import 'package:flutter_quiz_app/model/reponse_model/question_answer_response_model.dart';
 import 'package:flutter_quiz_app/model/reponse_model/stripe_keys_details.dart';
 import 'package:flutter_quiz_app/model/reponse_model/tribe_new_read_data_response.dart';
 import 'package:flutter_quiz_app/model/reponse_model/user_activity_response_model.dart';
+import 'package:flutter_quiz_app/model/request_model/identity_add_favourite_request.dart';
 import 'package:flutter_quiz_app/model/request_model/login_request.dart';
 import 'package:flutter_quiz_app/model/request_model/register_create_request.dart';
 import 'package:flutter_quiz_app/model/request_model/response_email_request.dart';
 import 'package:flutter_quiz_app/model/request_model/social_login_request_model.dart';
 import 'package:flutter_quiz_app/model/request_model/trellis_data_saving_request.dart';
+import 'package:flutter_quiz_app/model/request_model/trellis_vision_request_model.dart';
+import 'package:flutter_quiz_app/model/request_model/rhythms_add_favourite_request.dart';
 import 'package:flutter_quiz_app/network/response_handler.dart';
 
 import '../model/reponse_model/Sage/accepted_connections_list_response.dart';
@@ -502,6 +508,22 @@ class HTTPManager {
     return response;
   }
 
+  Future<dynamic> trellisVision(TrellisVisionRequestModel trellisVisionRequestModel) async {
+
+    String url = ApplicationURLs.API_TRELLIS_VISION;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),trellisVisionRequestModel.toJson());
+    // QuestionListModel questionAnswerResponseModel = QuestionListModel.fromJson(response["questions"]);
+    // ignore: avoid_print
+    print(response.toString());
+    return response;
+  }
+
+
+
   Future<dynamic> trellisPrinciples(TrellisPrinciplesRequestModel trellisPrinciplesRequestModel) async {
 
     String url = ApplicationURLs.API_TRELLIS_PRINCIPLES;
@@ -522,7 +544,8 @@ class HTTPManager {
     String url = ApplicationURLs.API_TRELLIS_READ;
     // print
     // ignore: avoid_print
-    print(url);
+    print('Trellis Read ===========> $url');
+    print('Data ===========> ${trellisRequestModel.toJson()}');
 
     final response =
     await _handler.post(Uri.parse(url),trellisRequestModel.toJson());
@@ -556,6 +579,45 @@ class HTTPManager {
 
     final response =
     await _handler.post(Uri.parse(url),ladderAddFavouriteItem.toJson());
+    // ignore: avoid_print
+    print(response.toString());
+    return response;
+  }
+
+  Future<dynamic> identityAddFavourite(IdentityAddFavouriteItem identityAddFavouriteItem) async {
+
+    String url = ApplicationURLs.API_IDENTITY_FAVOURITE;
+
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),identityAddFavouriteItem.toJson());
+    // ignore: avoid_print
+    print(response.toString());
+    return response;
+  }
+
+  Future<dynamic> organizingPrinciplesAddFavourite(OrganizingPrincipleAddFavouriteItem organizingPrincipleAddFavouriteItem) async {
+
+    String url = ApplicationURLs.API_PRINCIPLE_FAVOURITE;
+
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),organizingPrincipleAddFavouriteItem.toJson());
+    // ignore: avoid_print
+    print(response.toString());
+    return response;
+  }
+
+  Future<dynamic> rhythmsAddFavourite(RhythmsAddFavouriteItem rhythmsAddFavouriteItem) async {
+
+    String url = ApplicationURLs.API_PRINCIPLE_FAVOURITE;
+
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),rhythmsAddFavouriteItem.toJson());
     // ignore: avoid_print
     print(response.toString());
     return response;
@@ -646,6 +708,20 @@ class HTTPManager {
 
     final response =
     await _handler.post(Uri.parse(url),trellisUpdateIdentityRequestModel.toJson());
+    // QuestionListModel questionAnswerResponseModel = QuestionListModel.fromJson(response["questions"]);
+    // ignore: avoid_print
+    print(response.toString());
+    return response;
+  }
+
+  Future<dynamic> trellisUpdateVision(TrellisUpdateVisionRequestModel trellisUpdateVisionRequestModel) async {
+
+    String url = ApplicationURLs.API_TRELLIS_UPDATE_VISION;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),trellisUpdateVisionRequestModel.toJson());
     // QuestionListModel questionAnswerResponseModel = QuestionListModel.fromJson(response["questions"]);
     // ignore: avoid_print
     print(response.toString());
@@ -824,9 +900,17 @@ class HTTPManager {
 
     // ignore: avoid_print
     print(url);
+    print(jsonEncode(stripeCancelRequestModel.toJson()));
     final response =
     await _handler.post(Uri.parse(url),stripeCancelRequestModel.toJson());
     return response;
+  }
+
+  Future<LeavingReasonResponseModel> getLeavingReasons(LogoutRequestModel logoutRequestModel) async{
+    const url = ApplicationURLs.API_LEAVING_REASONS;
+    print(url);
+    final response = await _handler.post(Uri.parse(url), logoutRequestModel.toJson());
+    return LeavingReasonResponseModel.fromJson(response);
   }
 
 

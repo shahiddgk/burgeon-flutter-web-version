@@ -1,6 +1,6 @@
 // Register a service worker with the browser.
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/serviceWorkerV23.js');
+  navigator.serviceWorker.register('/serviceWorkerV31.js');
 }
 
 // Intercept network requests and serve cached resources.
